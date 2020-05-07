@@ -3,10 +3,10 @@
 ### An algorithm for solving homophonic substitution ciphers
 
 This is a Python implementation of the nested hill climb algorithm for solving
-[homophonic subsitution ciphers](https://en.wikipedia.org/wiki/Substitution_cipher#Homophonic_substitution)
+[homophonic substitution ciphers](https://en.wikipedia.org/wiki/Substitution_cipher#Homophonic_substitution)
 described in the paper
 [“Efficient Cryptanalysis of Homophonic Substitution Ciphers”](http://www.cs.sjsu.edu/~stamp/RUA/homophonic.pdf)
-by Amrapali Dhavare; Richard M. Low, and Mark Stamp.
+by Amrapali Dhavare, Richard M. Low, and Mark Stamp.
 
 #### API
 
