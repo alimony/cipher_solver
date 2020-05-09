@@ -7,57 +7,26 @@ from consts import STANDARD_ALPHABET_LENGTH
 class HomophonicSolver:
     """Homophonic substitution cipher solver."""
 
-    def __init__(self, ciphertext, lang="en", timeout=None):
+    def __init__(self, ciphertext):
         """Create new solver.
 
-        This creates a new homophonic cipher solver from an initial ciphertext, and
-        optionally a specified language. If a timeout is passed, the solver will stop
-        when that many seconds have passed.
+        This creates a new homophonic cipher solver from an initial ciphertext.
 
         Parameters
         ----------
         ciphertext : str
             The ciphertext to solve.
 
-        lang : str, optional
-            The language the cleartext is assumed to use.
-
-        timeout : float, optional
-            Number of seconds before stopping the solver.
-
         Raises
         ------
         ValueError
-            If the passed language is not supported.
+            If the passed ciphertext is empty.
         """
 
-        pass
-
-    def set_timeout(self, timeout):
-        """Set the solver timeout.
-
-        When the timeout is not None, the solver will run for a certain amount of time
-        instead of until a certain solution quality. This is useful if an initial
-        solution is not considered good enough. The solver can then be run over and over
-        again with a timeout for as many times as needed.
-
-        Parameters
-        ----------
-        timeout : float
-            Number of seconds before stopping the solver.
-        """
-
-        pass
-
-    def solve(self):
-        """Run the solver.
-
-        Run the solver until the solution quality does not improve. This is determined
-        by looking at the score of the solution over time. If a timeout was passed when
-        creating the solver, it will instead stop at that time, regardless of solution.
-        """
-
-        pass
+        self.ciphertext = ciphertext
+        self.putative_plaintext_digram_frequencies = self._get_digram_frequencies(
+            ciphertext, standard_size=True
+        )
 
     def _get_digram_frequencies(self, text, standard_size=False):
         """Generate digram frequencies for the passed text.
@@ -175,7 +144,18 @@ class HomophonicSolver:
 
         pass
 
-    def get_cleartext(self):
+    def solve(self, random_iterations=40):
+        """Run the solver.
+
+        Parameters
+        ----------
+        random_iterations : int
+            The number of iterations to use at the random initial key layer.
+        """
+
+        pass
+
+    def cleartext(self):
         """Return the current cleartext solution.
 
         Returns
@@ -187,10 +167,6 @@ class HomophonicSolver:
         pass
 
     def reset(self):
-        """Discard the current solution and reset the solver.
-
-        This will return the solver to an unsolved state, but with preserved language
-        and timeout parameters, useful for starting over.
-        """
+        """Discard the current solution and reset the solver."""
 
         pass

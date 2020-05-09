@@ -14,40 +14,20 @@ by Amrapali Dhavare, Richard M. Low, and Mark Stamp.
 class HomophonicSolver:
     """Homophonic substitution cipher solver."""
 
-    def __init__(self, ciphertext, lang="en", timeout=None):
+    def __init__(self, ciphertext):
         """Create new solver.
 
-        This creates a new homophonic cipher solver from an initial ciphertext, and
-        optionally a specified language. If a timeout is passed, the solver will stop
-        when that many seconds have passed.
+        This creates a new homophonic cipher solver from an initial ciphertext.
         """
 
-    def set_timeout(self, timeout):
-        """Set the solver timeout.
+    def solve(self, random_iterations=40):
+        """Run the solver."""
 
-        When the timeout is not None, the solver will run for a certain amount of time
-        instead of until a certain solution quality. This is useful if an initial
-        solution is not considered good enough. The solver can then be run over and over
-        again with a timeout for as many times as needed.
-        """
-
-    def solve(self):
-        """Run the solver.
-
-        Run the solver until the solution quality does not improve. This is determined
-        by looking at the score of the solution over time. If a timeout was passed when
-        creating the solver, it will instead stop at that time, regardless of solution.
-        """
-
-    def get_cleartext(self):
+    def cleartext(self):
         """Return the current cleartext solution."""
 
     def reset(self):
-        """Discard the current solution and reset the solver.
-
-        This will return the solver to an unsolved state, but with preserved language
-        and timeout parameters, useful for starting over.
-        """
+        """Discard the current solution and reset the solver."""
 ```
 See the [documentation](html/homophonic.html) for full description of methods and their
 parameters.
@@ -57,26 +37,20 @@ parameters.
 ```python
 from homophonic import HomophonicSolver
 
-h = HomophonicSolver("F7EZ5F UC2 1DR6 M9PP 0E 6CZ SD4UP1")
+# Solve a cipher.
+h = HomophonicSolver("F7EZ5FUC21DR6M9PP0E6CZ SD4UP1")
 h.solve()
+print(h.cleartext())  # "DEFENDTHEEASTWALLOFTHECASTLE"
 
-print(h.get_cleartext())  # "DEFEND THE EAST WALL OF THE CASTLE"
-
-# Try solving with the assumption that cleartext is in Swedish, and stop after a minute.
-h = HomophonicSolver("VPk|1LTG2dNp+B(#O%DWY.<*Kf)By:cM+UZG", lang="sv")
-
-print(h.get_cleartext())  # None, since solver hasn't run with the new ciphertext yet.
-
+# Solve a new cipher.
+h = HomophonicSolver("VPk|1LTG2dNp+B(#O%DWY.<*Kf)By:cM+UZG")
+print(h.cleartext())  # None, since solver hasn't run yet.
 h.solve()
-
-h.set_timeout(60.0)
-h.solve()  # Run for another minute.
-
-print(h.get_cleartext())  # We might have a good solution now... or not.
+print(h.cleartext())  # We might have a good solution now... or not.
 
 h.reset()  # Discard current solution to start over.
-h.set_timeout(None)
 h.solve()
+print(h.cleartext())  # We have an alternative solution now.
 ```
 
 #### CLI
@@ -88,17 +62,12 @@ using whatever alphabet is suitable, and run:
 solve.py [--lang=en] <path_to_ciphertext_file>
 ```
 
-The currently best-scored solution is printed every ten seconds and the program runs
-indefinitely until interrupted. The `lang` argument is optional and allows you to base
-the cryptanalysis on statistics specific to that language, identified by its
-[two-letter ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
-
 #### Running tests
 
-`python -m unittest discover`
+`make test`
 
 #### Generating documentation
 
 The documentation is generated from code using [pdoc3](https://pdoc3.github.io/pdoc/):
 
-`pdoc --html --force homophonic`
+`make docs`
