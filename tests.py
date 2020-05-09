@@ -1,5 +1,5 @@
 import unittest
-from string import ascii_uppercase
+from string import ascii_lowercase
 
 from consts import DIGRAM_FREQS_ENGLISH
 
@@ -13,18 +13,18 @@ class ConstTestCase(unittest.TestCase):
 
         def _get_freq(digram):
             a, b = digram
-            row = ascii_uppercase.index(a)
-            col = ascii_uppercase.index(b)
+            row = ascii_lowercase.index(a)
+            col = ascii_lowercase.index(b)
 
             return DIGRAM_FREQS_ENGLISH[row][col]
 
         # These should pass.
         digrams = (
-            ("RI", 0.00728),
-            ("IN", 2.00433),
-            ("WT", 0.00007),
-            ("EW", 0.00117),
-            ("SE", 0.00932),
+            ("ri", 0.00728),
+            ("in", 2.00433),
+            ("wt", 0.00007),
+            ("ew", 0.00117),
+            ("se", 0.00932),
         )
 
         for digram, freq in digrams:
@@ -32,11 +32,11 @@ class ConstTestCase(unittest.TestCase):
 
         # These should fail.
         digrams = (
-            ("CC", 0.00728),
-            ("KM", 2.00433),
-            ("AU", 0.00007),
-            ("ZI", 0.00117),
-            ("RP", 0.00932),
+            ("cc", 0.00728),
+            ("km", 2.00433),
+            ("au", 0.00007),
+            ("zi", 0.00117),
+            ("rp", 0.00932),
         )
 
         for digram, freq in digrams:
