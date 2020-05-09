@@ -93,6 +93,10 @@ indefinitely until interrupted. The `lang` argument is optional and allows you t
 the cryptanalysis on statistics specific to that language, identified by its
 [two-letter ISO 639-1 code](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
 
+#### Running tests
+
+`python -m unittest discover`
+
 #### Generating documentation
 
 The documentation is generated from code using [pdoc3](https://pdoc3.github.io/pdoc/):
