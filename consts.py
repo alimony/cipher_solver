@@ -6,10 +6,10 @@ import numpy as np
 STANDARD_ALPHABET_LENGTH = 26
 
 # Source: http://norvig.com/mayzner.html
-# This is a 26 x 26 array containing the digram frequencies for the English language and
-# is used for scoring potential solutions. The row corresponds to the first letter and
-# the column to the second. For example, the frequency for the digram "df" would be at
-# row 4 and column 6, i.e. DIGRAM_FREQS_ENGLISH[3][5], with the value 0.00003.
+# This is a (26 x 26) array containing the digram frequencies for the English language
+# and # is used for scoring potential solutions. The row corresponds to the first letter
+# and the column to the second. For example, the frequency for the digram "df" would be
+# at row 4 and column 6, i.e. DIGRAM_FREQS_ENGLISH[3][5], with the value 0.00003.
 DIGRAM_FREQS_ENGLISH = np.array([
     [0.00003, 0.00230, 0.00448, 0.00368, 0.00012, 0.00074, 0.00205, 0.00014, 0.00316, 0.00012, 0.00105, 1.00087, 0.00285, 1.00985, 0.00005, 0.00203, 0.00002, 1.00075, 0.00871, 1.00487, 0.00119, 0.00205, 0.00060, 0.00019, 0.00217, 0.00012],
     [0.00146, 0.00011, 0.00002, 0.00002, 0.00576, 0.00000, 0.00000, 0.00001, 0.00107, 0.00023, 0.00000, 0.00233, 0.00003, 0.00002, 0.00195, 0.00001, 0.00000, 0.00112, 0.00046, 0.00017, 0.00185, 0.00004, 0.00000, 0.00000, 0.00176, 0.00000],
