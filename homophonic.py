@@ -1,3 +1,9 @@
+from string import ascii_lowercase
+
+import numpy as np
+from consts import STANDARD_ALPHABET_LENGTH
+
+
 class HomophonicSolver:
     """Homophonic substitution cipher solver."""
 
@@ -53,6 +59,53 @@ class HomophonicSolver:
 
         pass
 
+    def _get_digram_frequencies(self, text, standard_size=False):
+        """Generate digram frequencies for the passed text.
+
+        Parameters
+        ----------
+        text : str
+            The text to generate digram frequencies for.
+        standard_size : bool
+            If True, create a (26 x 26) English alphabet array.
+            If False, create an (n x n) array where n is the number of distinct chars.
+
+        Returns
+        -------
+        digram_frequencies : numpy.array
+            An array of digram frequencies indexed by [first][second] letter.
+
+        Raises
+        ------
+        ValueError
+            If the passed text is not a string, or less than two letters.
+        """
+
+        if not isinstance(text, str):
+            raise ValueError(f"{text} must be a string.")
+
+        if len(text) < 2:
+            raise ValueError(f"{text} must be at least two letters.")
+
+        n = STANDARD_ALPHABET_LENGTH if standard_size else len(set(text))
+        frequencies = np.zeros((n, n))
+
+        text_length = len(text)
+
+        if standard_size:
+            for i in range(0, text_length - 1):
+                a = ascii_lowercase.index(text[i].lower())
+                b = ascii_lowercase.index(text[i + 1].lower())
+                frequencies[a, b] += 1
+
+        # Replace each entry with a percentage of the total text length, to get the same
+        # format as the English digram frequencies.
+        rows, columns = frequencies.shape
+        for i in range(rows):
+            for j in range(columns):
+                frequencies[i, j] = frequencies[i, j] / n ** 2
+
+        return frequencies
     def get_cleartext(self):
         """Return the current cleartext solution.
 
