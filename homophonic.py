@@ -106,6 +106,75 @@ class HomophonicSolver:
                 frequencies[i, j] = frequencies[i, j] / n ** 2
 
         return frequencies
+
+    def _outer_hill_climb(self):
+        # OuterHillClimb
+        # global K = bestInitKey = bestKey = NULL
+        # parse ciphertext to determine DC
+        # initialize na, nb, ..., nz as in Table 7
+        # (m1, m2, ..., m26) = (na, nb, ..., nz)
+        # bestScore = RandomInitialKey(m1, m2, ..., m26)
+        # bestKey = bestInitKey
+        # for i = 1 to 25
+        #     for j = 1 to 26 − i
+        #         (m'1, m'2,...,m'26) = (m1, m2, ..., m26)
+        #         outerSwap(m'[j], m'[j+i])
+        #         score = RandomInitialKey(m'1, m'2, ..., m'26)
+        #         if score < bestScore then
+        #             (m1, m2, ..., m26) = (m'1, m'2, ..., m'26)
+        #             bestScore = score
+        #             bestKey = bestInitKey
+        #         else
+        #             (m'1, m'2, ..., m'26) = (m1, m2, ..., m26)
+        #             outerSwap(m'[j+i], m'[j])
+        #             score = RandomInitialKey(m'1, m'2, ..., m'26)
+        #             if score < bestScore then
+        #                 (m1, m2, ..., m26) = (m'1, m'2, ..., m'26)
+        #                 bestScore = score
+        #                 bestKey = bestInitKey
+        #             end if
+        #         end if
+        #     next j
+        # next i
+        # return bestKey
+
+        pass
+
+    def _random_initial_key(self):
+        # RandomInitialKey(na, nb, ..., nz)
+        # bestInitScore = ∞
+        # for r = 1 to R
+        #     randomly initialize K = (k1, k2, ..., kn) satisfying na, nb, ..., nz
+        #     DP = digram matrix from DC and K
+        #     initScore = InnerHillClimb(DP)
+        #     if initScore < bestInitScore then
+        #         bestInitScore = initScore
+        #         bestInitKey = K
+        #     end if
+        # next r
+        # return bestInitScore
+
+        pass
+
+    def _inner_hill_climb(self):
+        # InnerHillClimb(DP)
+        # innerScore = d(DP, E)
+        # for i = 1 to n − 1
+        #     for j = 1 to n − i
+        #         K' = K
+        #         swap(k'[j], k'[j+1])
+        #         D' = digram matrix for K' using DP and DC
+        #         if d(D', E) < innerScore then
+        #             innerScore = d(D', E)
+        #             K = K'
+        #             DP = D'
+        #         end if
+        #     next j
+        # next i
+        # return innerScore
+
+        pass
+
     def get_cleartext(self):
         """Return the current cleartext solution.
 
