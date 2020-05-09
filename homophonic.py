@@ -20,8 +20,14 @@ class HomophonicSolver:
         Raises
         ------
         ValueError
-            If the passed ciphertext is empty.
+            If the passed ciphertext is not a string, or is empty.
         """
+
+        if not isinstance(ciphertext, str):
+            raise ValueError(f"{ciphertext} is not a string.")
+
+        if len(ciphertext) < 1:
+            raise ValueError("Ciphertext cannot be empty.")
 
         self.ciphertext = ciphertext
         self.putative_plaintext_digram_frequencies = self._get_digram_frequencies(
@@ -51,7 +57,7 @@ class HomophonicSolver:
         """
 
         if not isinstance(text, str):
-            raise ValueError(f"{text} must be a string.")
+            raise ValueError(f"{text} is not a string.")
 
         if len(text) < 2:
             raise ValueError(f"{text} must be at least two letters.")

@@ -5,6 +5,22 @@ from consts import DIGRAM_FREQS_ENGLISH, STANDARD_ALPHABET_LENGTH
 from homophonic import HomophonicSolver
 
 
+class InitTestCase(unittest.TestCase):
+    """Tests related to initialisation of the solver."""
+
+    def test_solver_init(self):
+        with self.assertRaises(TypeError):
+            HomophonicSolver()
+        with self.assertRaises(ValueError):
+            HomophonicSolver(123)
+        with self.assertRaises(ValueError):
+            HomophonicSolver([])
+        with self.assertRaises(ValueError):
+            HomophonicSolver("")
+
+        HomophonicSolver("abcdef")
+
+
 class ConstTestCase(unittest.TestCase):
     """Tests to verify the integrity of all constants."""
 
