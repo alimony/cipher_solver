@@ -1,4 +1,5 @@
 Mako==1.1.2
 Markdown==3.2.1
 MarkupSafe==1.1.1
+numpy==1.18.4
 pdoc3==0.8.1
