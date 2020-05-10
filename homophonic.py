@@ -35,10 +35,23 @@ class HomophonicSolver:
         if len(ciphertext) < 1:
             raise ValueError("Ciphertext cannot be empty.")
 
-        self.ciphertext = ciphertext
-        self.putative_plaintext_digram_frequencies = self._get_digram_frequencies(
-            ciphertext, standard_size=True
-        )
+        self._ciphertext = ciphertext
+        self._random_iterations = random_iterations
+
+        # This corresponds to K in the paper.
+        self._putative_plaintext_key = None
+
+        # This corresponds to D_C in the paper and never changes.
+        self._ciphertext_digram_frequencies = self._get_digram_frequencies(ciphertext)
+
+        # This corresponds to D_P in the paper.
+        self._plaintext_digram_frequencies = None
+
+        alphabet_size = self._get_num_distinct_letters(ciphertext)
+        self._frequency_distribution = self._get_frequency_distribution(alphabet_size)
+
+        self._best_key = None
+        self._best_initial_key = None
 
     def _get_frequency_distribution(self, alphabet_size):
         """Return frequency distribution based on alphabet size. The returned numpy
