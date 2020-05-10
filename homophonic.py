@@ -40,27 +40,34 @@ class HomophonicSolver:
 
     def _get_frequency_distribution(self, alphabet_size):
         """Return frequency distribution based on alphabet size. The returned numpy
-        array is assumed to be in the same order as English letter frequencies."""
+        array contains the number of occurrences in alphabetical order."""
 
         # Assume each letter will be mapped at least once.
-        distribution = np.ones(STANDARD_ALPHABET_SIZE)
+        tmp_distribution = [1] * STANDARD_ALPHABET_SIZE
 
-        frequencies = np.array(list(ENGLISH_LETTER_FREQUENCIES.values()))
+        frequencies = list(ENGLISH_LETTER_FREQUENCIES.values())
 
         # If there are more letters than in the English alphabet, distribute them over
         # the entire range according to letter frequencies.
         for _ in range(alphabet_size - STANDARD_ALPHABET_SIZE):
             max_freq = 0
             for j in range(STANDARD_ALPHABET_SIZE):
-                temp = distribution[j] + 1
-                temp_freq = frequencies[j] / temp
-                if temp_freq > max_freq:
-                    max_freq = temp_freq
+                tmp = tmp_distribution[j] + 1
+                tmp_freq = frequencies[j] / tmp
+                if tmp_freq > max_freq:
+                    max_freq = tmp_freq
                     max_index = j
-            distribution[max_index] += 1
+            tmp_distribution[max_index] += 1
 
         # Just make sure the distribution still adds up to the alphabet size.
-        assert distribution.sum() == alphabet_size
+        assert sum(tmp_distribution) == alphabet_size
+
+        # Sort array alphabetically.
+        distribution = np.zeros(STANDARD_ALPHABET_SIZE)
+        letters_by_frequency = ENGLISH_LETTER_FREQUENCIES.keys()
+        for letter, occurrences in zip(letters_by_frequency, tmp_distribution):
+            index = ascii_lowercase.index(letter)
+            distribution[index] = occurrences
 
         return distribution
 
