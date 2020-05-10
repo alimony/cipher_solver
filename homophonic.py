@@ -1,7 +1,7 @@
 from string import ascii_lowercase
 
 import numpy as np
-from consts import STANDARD_ALPHABET_LENGTH
+from consts import DIGRAM_FREQS_ENGLISH, STANDARD_ALPHABET_LENGTH
 
 
 class HomophonicSolver:
@@ -81,6 +81,12 @@ class HomophonicSolver:
                 frequencies[i, j] = frequencies[i, j] / n ** 2
 
         return frequencies
+
+    def _score(self, matrix1, matrix2=DIGRAM_FREQS_ENGLISH):
+        if matrix1.shape != matrix2.shape:
+            raise ValueError("Digram frequency matrices must have the same dimensions")
+
+        return abs(matrix1 - matrix2).sum()
 
     def _outer_hill_climb(self):
         # OuterHillClimb

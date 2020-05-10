@@ -1,6 +1,7 @@
 import unittest
 from string import ascii_lowercase
 
+import numpy as np
 from consts import DIGRAM_FREQS_ENGLISH, STANDARD_ALPHABET_LENGTH
 from homophonic import HomophonicSolver
 
@@ -95,3 +96,20 @@ class HomophonicSolverTestCase(unittest.TestCase):
         self.assertEqual(
             frequencies[25, 25], 0.0000000  # Digram "zz" occurs zero times.
         )
+
+    def test_score(self):
+        """Test the scoring function for digram frequency matrices."""
+
+        h = HomophonicSolver("foo")
+
+        a = np.array([[1, 2], [3, 4]])
+        b = np.array([[5, 6], [7, 8]])
+
+        self.assertEqual(h._score(a, b), 16)
+
+        with self.assertRaises(ValueError):
+            h._score(a)
+
+        c = np.ones((STANDARD_ALPHABET_LENGTH, STANDARD_ALPHABET_LENGTH))
+
+        self.assertEqual(h._score(c), 658.43119)
