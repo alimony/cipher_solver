@@ -133,6 +133,9 @@ class HomophonicSolver:
         return abs(matrix1 - matrix2).sum()
 
     def _outer_hill_climb(self):
+        """Run the outer hill climb that determines the optimal distribution of
+        characters when mapping the ciphertest alphabet to the plaintext alphabet."""
+
         # OuterHillClimb
         # global K = bestInitKey = bestKey = NULL
         # parse ciphertext to determine DC
@@ -163,7 +166,30 @@ class HomophonicSolver:
         # next i
         # return bestKey
 
-        pass
+        distribution = np.copy(self._frequency_distribution)
+
+        best_score = self._random_initial_key(distribution)
+        self._best_key = self._best_initial_key
+        for i in range(STANDARD_ALPHABET_SIZE - 1):
+            for j in range(STANDARD_ALPHABET_SIZE - i):
+                tmp_distribution = np.copy(distribution)
+                # Outer swap:
+                tmp_distribution[j] += 1
+                tmp_distribution[j + i] -= 1
+                score = self._random_initial_key(tmp_distribution)
+                if score < best_score:
+                    distribution = np.copy(tmp_distribution)
+                    best_score = score
+                    self._best_key = self._best_initial_key
+                else:
+                    tmp_distribution = np.copy(distribution)
+                    tmp_distribution[j + i] += 1
+                    tmp_distribution[j] -= 1
+                    score = self._random_initial_key(tmp_distribution)
+                    if score < best_score:
+                        distribution = np.copy(tmp_distribution)
+                        best_score = score
+                        self._best_key = self._best_initial_key
 
     def _random_initial_key(self):
         # RandomInitialKey(na, nb, ..., nz)
