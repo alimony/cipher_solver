@@ -11,7 +11,7 @@ from consts import (
 class HomophonicSolver:
     """Homophonic substitution cipher solver."""
 
-    def __init__(self, ciphertext):
+    def __init__(self, ciphertext, random_iterations=40):
         """Create new solver.
 
         This creates a new homophonic cipher solver from an initial ciphertext.
@@ -20,6 +20,8 @@ class HomophonicSolver:
         ----------
         ciphertext : str
             The ciphertext to solve.
+        random_iterations : int
+            The number of iterations to use at the random initial key layer.
 
         Raises
         ------
@@ -198,14 +200,8 @@ class HomophonicSolver:
 
         pass
 
-    def solve(self, random_iterations=40):
-        """Run the solver.
-
-        Parameters
-        ----------
-        random_iterations : int
-            The number of iterations to use at the random initial key layer.
-        """
+    def solve(self):
+        """Run the solver."""
 
         pass
 
