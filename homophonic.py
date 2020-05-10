@@ -161,13 +161,13 @@ class HomophonicSolver:
 
         pass
 
-    def cleartext(self):
-        """Return the current cleartext solution.
+    def plaintext(self):
+        """Return the current plaintext solution.
 
         Returns
         -------
-        cleartext : str or None
-            The current cleartext solution, or None of solver hasn't run.
+        plaintext : str or None
+            The current plaintext solution, or None of solver hasn't run.
         """
 
         pass

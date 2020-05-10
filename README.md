@@ -23,8 +23,8 @@ class HomophonicSolver:
     def solve(self, random_iterations=40):
         """Run the solver."""
 
-    def cleartext(self):
-        """Return the current cleartext solution."""
+    def plaintext(self):
+        """Return the current plaintext solution."""
 
     def reset(self):
         """Discard the current solution and reset the solver."""
@@ -40,17 +40,17 @@ from homophonic import HomophonicSolver
 # Solve a cipher.
 h = HomophonicSolver("F7EZ5FUC21DR6M9PP0E6CZ SD4UP1")
 h.solve()
-print(h.cleartext())  # "DEFENDTHEEASTWALLOFTHECASTLE"
+print(h.plaintext())  # "DEFENDTHEEASTWALLOFTHECASTLE"
 
 # Solve a new cipher.
 h = HomophonicSolver("VPk|1LTG2dNp+B(#O%DWY.<*Kf)By:cM+UZG")
-print(h.cleartext())  # None, since solver hasn't run yet.
+print(h.plaintext())  # None, since solver hasn't run yet.
 h.solve()
-print(h.cleartext())  # We might have a good solution now... or not.
+print(h.plaintext())  # We might have a good solution now... or not.
 
 h.reset()  # Discard current solution to start over.
 h.solve()
-print(h.cleartext())  # We have an alternative solution now.
+print(h.plaintext())  # We have an alternative solution now.
 ```
 
 #### CLI

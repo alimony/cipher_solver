@@ -46,8 +46,14 @@ class HomophonicSolver:
         Raises
         ------
         ValueError
-            If the passed ciphertext is empty.
+            If the passed ciphertext is not a string, or is empty.
         &#34;&#34;&#34;
+
+        if not isinstance(ciphertext, str):
+            raise ValueError(f&#34;{ciphertext} is not a string.&#34;)
+
+        if len(ciphertext) &lt; 1:
+            raise ValueError(&#34;Ciphertext cannot be empty.&#34;)
 
         self.ciphertext = ciphertext
         self.putative_plaintext_digram_frequencies = self._get_digram_frequencies(
@@ -77,7 +83,7 @@ class HomophonicSolver:
         &#34;&#34;&#34;
 
         if not isinstance(text, str):
-            raise ValueError(f&#34;{text} must be a string.&#34;)
+            raise ValueError(f&#34;{text} is not a string.&#34;)
 
         if len(text) &lt; 2:
             raise ValueError(f&#34;{text} must be at least two letters.&#34;)
@@ -181,13 +187,13 @@ class HomophonicSolver:
 
         pass
 
-    def cleartext(self):
-        &#34;&#34;&#34;Return the current cleartext solution.
+    def plaintext(self):
+        &#34;&#34;&#34;Return the current plaintext solution.
 
         Returns
         -------
-        cleartext : str or None
-            The current cleartext solution, or None of solver hasn&#39;t run.
+        plaintext : str or None
+            The current plaintext solution, or None of solver hasn&#39;t run.
         &#34;&#34;&#34;
 
         pass
@@ -223,7 +229,7 @@ class HomophonicSolver:
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>ValueError</code></dt>
-<dd>If the passed ciphertext is empty.</dd>
+<dd>If the passed ciphertext is not a string, or is empty.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -245,8 +251,14 @@ class HomophonicSolver:
         Raises
         ------
         ValueError
-            If the passed ciphertext is empty.
+            If the passed ciphertext is not a string, or is empty.
         &#34;&#34;&#34;
+
+        if not isinstance(ciphertext, str):
+            raise ValueError(f&#34;{ciphertext} is not a string.&#34;)
+
+        if len(ciphertext) &lt; 1:
+            raise ValueError(&#34;Ciphertext cannot be empty.&#34;)
 
         self.ciphertext = ciphertext
         self.putative_plaintext_digram_frequencies = self._get_digram_frequencies(
@@ -276,7 +288,7 @@ class HomophonicSolver:
         &#34;&#34;&#34;
 
         if not isinstance(text, str):
-            raise ValueError(f&#34;{text} must be a string.&#34;)
+            raise ValueError(f&#34;{text} is not a string.&#34;)
 
         if len(text) &lt; 2:
             raise ValueError(f&#34;{text} must be at least two letters.&#34;)
@@ -380,13 +392,13 @@ class HomophonicSolver:
 
         pass
 
-    def cleartext(self):
-        &#34;&#34;&#34;Return the current cleartext solution.
+    def plaintext(self):
+        &#34;&#34;&#34;Return the current plaintext solution.
 
         Returns
         -------
-        cleartext : str or None
-            The current cleartext solution, or None of solver hasn&#39;t run.
+        plaintext : str or None
+            The current plaintext solution, or None of solver hasn&#39;t run.
         &#34;&#34;&#34;
 
         pass
@@ -424,27 +436,27 @@ class HomophonicSolver:
     pass</code></pre>
 </details>
 </dd>
-<dt id="homophonic.HomophonicSolver.cleartext"><code class="name flex">
-<span>def <span class="ident">cleartext</span></span>(<span>self)</span>
+<dt id="homophonic.HomophonicSolver.plaintext"><code class="name flex">
+<span>def <span class="ident">plaintext</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Return the current cleartext solution.</p>
+<div class="desc"><p>Return the current plaintext solution.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><strong><code>cleartext</code></strong> :&ensp;<code>str</code> or <code>None</code></dt>
-<dd>The current cleartext solution, or None of solver hasn't run.</dd>
+<dt><strong><code>plaintext</code></strong> :&ensp;<code>str</code> or <code>None</code></dt>
+<dd>The current plaintext solution, or None of solver hasn't run.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def cleartext(self):
-    &#34;&#34;&#34;Return the current cleartext solution.
+<pre><code class="python">def plaintext(self):
+    &#34;&#34;&#34;Return the current plaintext solution.
 
     Returns
     -------
-    cleartext : str or None
-        The current cleartext solution, or None of solver hasn&#39;t run.
+    plaintext : str or None
+        The current plaintext solution, or None of solver hasn&#39;t run.
     &#34;&#34;&#34;
 
     pass</code></pre>
@@ -482,7 +494,7 @@ class HomophonicSolver:
 <h4><code><a title="homophonic.HomophonicSolver" href="#homophonic.HomophonicSolver">HomophonicSolver</a></code></h4>
 <ul class="">
 <li><code><a title="homophonic.HomophonicSolver.solve" href="#homophonic.HomophonicSolver.solve">solve</a></code></li>
-<li><code><a title="homophonic.HomophonicSolver.cleartext" href="#homophonic.HomophonicSolver.cleartext">cleartext</a></code></li>
+<li><code><a title="homophonic.HomophonicSolver.plaintext" href="#homophonic.HomophonicSolver.plaintext">plaintext</a></code></li>
 <li><code><a title="homophonic.HomophonicSolver.reset" href="#homophonic.HomophonicSolver.reset">reset</a></code></li>
 </ul>
 </li>
