@@ -2,7 +2,7 @@ import unittest
 from string import ascii_lowercase
 
 import numpy as np
-from consts import DIGRAM_FREQS_ENGLISH, STANDARD_ALPHABET_LENGTH
+from consts import DIGRAM_FREQS_ENGLISH, STANDARD_ALPHABET_SIZE
 from homophonic import HomophonicSolver
 
 
@@ -77,7 +77,7 @@ class HomophonicSolverTestCase(unittest.TestCase):
         frequencies = h._get_digram_frequencies(text, standard_size=True)
 
         self.assertEqual(
-            frequencies.shape, (STANDARD_ALPHABET_LENGTH, STANDARD_ALPHABET_LENGTH)
+            frequencies.shape, (STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE)
         )
 
         # The frequencies array should now have mostly zeros, but one non-zero entry for
@@ -112,7 +112,7 @@ class HomophonicSolverTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             h._score(a)
 
-        c = np.ones((STANDARD_ALPHABET_LENGTH, STANDARD_ALPHABET_LENGTH))
+        c = np.ones((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
 
         self.assertEqual(h._score(c), 658.43119)
 

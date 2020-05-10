@@ -3,7 +3,7 @@
 import numpy as np
 
 # English alphabet has 26 letters.
-STANDARD_ALPHABET_LENGTH = 26
+STANDARD_ALPHABET_SIZE = 26
 
 # Source: http://norvig.com/mayzner.html
 # This is a (26 x 26) array containing the digram frequencies for the English language

@@ -1,7 +1,11 @@
 from string import ascii_lowercase
 
 import numpy as np
-from consts import DIGRAM_FREQS_ENGLISH, STANDARD_ALPHABET_LENGTH
+from consts import (
+    DIGRAM_FREQS_ENGLISH,
+    ENGLISH_LETTER_FREQUENCIES,
+    STANDARD_ALPHABET_SIZE,
+)
 
 
 class HomophonicSolver:
@@ -67,7 +71,7 @@ class HomophonicSolver:
         if len(text) < 2:
             raise ValueError(f"{text} must be at least two letters.")
 
-        n = STANDARD_ALPHABET_LENGTH if standard_size else len(set(text))
+        n = STANDARD_ALPHABET_SIZE if standard_size else len(set(text))
         frequencies = np.zeros((n, n))
 
         text_length = len(text)
