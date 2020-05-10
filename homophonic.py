@@ -126,6 +126,12 @@ class HomophonicSolver:
 
         return frequencies
 
+    def _update_plaintext_digram_frequencies(self):
+        """Update the current putative plaintext digram frequencies using the initially
+        saved ciphertext digram frequencies."""
+
+        pass
+
     def _score(self, matrix1, matrix2=DIGRAM_FREQS_ENGLISH):
         if matrix1.shape != matrix2.shape:
             raise ValueError("Digram frequency matrices must have the same dimensions")
