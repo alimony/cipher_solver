@@ -65,7 +65,7 @@ class HomophonicSolver:
         return distribution
 
     def _get_num_distinct_letters(self, text):
-        """Get the number of distinct letters in the passed text."""
+        """Return the number of distinct letters in the passed text."""
 
         return len(set(text))
 
