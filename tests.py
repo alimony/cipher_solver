@@ -5,10 +5,12 @@ from consts import DIGRAM_FREQS_ENGLISH, STANDARD_ALPHABET_LENGTH
 from homophonic import HomophonicSolver
 
 
-class InitTestCase(unittest.TestCase):
-    """Tests related to initialisation of the solver."""
+class HomophonicSolverTestCase(unittest.TestCase):
+    """Test suite for the homophonic solver."""
 
     def test_solver_init(self):
+        """Test basic initialisation of solver."""
+
         with self.assertRaises(TypeError):
             HomophonicSolver()
         with self.assertRaises(ValueError):
@@ -19,10 +21,6 @@ class InitTestCase(unittest.TestCase):
             HomophonicSolver("")
 
         HomophonicSolver("abcdef")
-
-
-class ConstTestCase(unittest.TestCase):
-    """Tests to verify the integrity of all constants."""
 
     def test_english_digram_frequencies(self):
         """Test a few samples from the digram source at http://norvig.com/mayzner.html
@@ -58,10 +56,6 @@ class ConstTestCase(unittest.TestCase):
 
         for digram, freq in digrams:
             self.assertNotEqual(_get_freq(digram), freq)
-
-
-class DigramFrequenciesTestCase(unittest.TestCase):
-    """Test to verify all digram frequency generation methods."""
 
     def test_get_digram_frequencies(self):
         def _unique_digrams(frequencies):
