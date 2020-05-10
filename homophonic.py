@@ -34,6 +34,11 @@ class HomophonicSolver:
             ciphertext, standard_size=True
         )
 
+    def _get_num_distinct_letters(self, text):
+        """Get the number of distinct letters in the passed text."""
+
+        return len(set(text))
+
     def _get_digram_frequencies(self, text, standard_size=False):
         """Generate digram frequencies for the passed text.
 

@@ -115,3 +115,20 @@ class HomophonicSolverTestCase(unittest.TestCase):
         c = np.ones((STANDARD_ALPHABET_LENGTH, STANDARD_ALPHABET_LENGTH))
 
         self.assertEqual(h._score(c), 658.43119)
+
+    def test_get_num_distinct_letters(self):
+        """Test getting the number of distinct letters in a text."""
+
+        h = HomophonicSolver("foo")
+
+        items = (
+            ("", 0),
+            ("a", 1),
+            ("ab", 2),
+            ("aabb", 2),
+            ("aaabbbccc", 3),
+            ("aaabbc", 3),
+        )
+
+        for text, num_letters in items:
+            self.assertEqual(h._get_num_distinct_letters(text), num_letters)
