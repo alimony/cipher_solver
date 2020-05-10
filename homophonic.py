@@ -38,6 +38,32 @@ class HomophonicSolver:
             ciphertext, standard_size=True
         )
 
+    def _get_frequency_distribution(self, alphabet_size):
+        """Return frequency distribution based on alphabet size. The returned numpy
+        array is assumed to be in the same order as English letter frequencies."""
+
+        # Assume each letter will be mapped at least once.
+        distribution = np.ones(STANDARD_ALPHABET_SIZE)
+
+        frequencies = np.array(list(ENGLISH_LETTER_FREQUENCIES.values()))
+
+        # If there are more letters than in the English alphabet, distribute them over
+        # the entire range according to letter frequencies.
+        for _ in range(alphabet_size - STANDARD_ALPHABET_SIZE):
+            max_freq = 0
+            for j in range(STANDARD_ALPHABET_SIZE):
+                temp = distribution[j] + 1
+                temp_freq = frequencies[j] / temp
+                if temp_freq > max_freq:
+                    max_freq = temp_freq
+                    max_index = j
+            distribution[max_index] += 1
+
+        # Just make sure the distribution still adds up to the alphabet size.
+        assert distribution.sum() == alphabet_size
+
+        return distribution
+
     def _get_num_distinct_letters(self, text):
         """Get the number of distinct letters in the passed text."""
 

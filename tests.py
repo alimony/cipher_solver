@@ -132,3 +132,29 @@ class HomophonicSolverTestCase(unittest.TestCase):
 
         for text, num_letters in items:
             self.assertEqual(h._get_num_distinct_letters(text), num_letters)
+
+    def test_get_frequency_distribution(self):
+        """Test calculation of frequency distributions."""
+
+        h = HomophonicSolver("foo")
+
+        # fmt: off
+        items = (
+            (26, np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])),  # noqa
+            (27, np.array([2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])),  # noqa
+            (35, np.array([3, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])),  # noqa
+            (45, np.array([5, 4, 3, 3, 3, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])),  # noqa
+            (55, np.array([7, 5, 4, 4, 4, 4, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])),  # noqa
+            (65, np.array([8, 6, 5, 5, 5, 5, 4, 4, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])),  # noqa
+            (75, np.array([9, 7, 6, 6, 6, 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])),  # noqa
+            (85, np.array([11, 8, 7, 7, 6, 6, 5, 5, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])),  # noqa
+            (95, np.array([12, 9, 8, 7, 7, 7, 6, 6, 5, 4, 3, 3, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])),  # noqa
+        )
+        # fmt: on
+
+        for alphabet_size, distribution in items:
+            self.assertTrue(
+                np.array_equal(
+                    h._get_frequency_distribution(alphabet_size), distribution
+                )
+            )
