@@ -59,6 +59,8 @@ class HomophonicSolverTestCase(unittest.TestCase):
             self.assertNotEqual(_get_freq(digram), freq)
 
     def test_get_digram_frequencies(self):
+        """Test generation of digram frequency matrices."""
+
         def _unique_digrams(frequencies):
             rows, columns = frequencies.shape
             num_nonzero = 0
