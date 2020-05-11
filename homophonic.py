@@ -11,7 +11,7 @@ from consts import (
 class HomophonicSolver:
     """Homophonic substitution cipher solver."""
 
-    def __init__(self, ciphertext, random_iterations=40):
+    def __init__(self, ciphertext):
         """Create new solver.
 
         This creates a new homophonic cipher solver from an initial ciphertext.
@@ -20,8 +20,6 @@ class HomophonicSolver:
         ----------
         ciphertext : str
             The ciphertext to solve.
-        random_iterations : int
-            The number of iterations to use at the random initial key layer.
 
         Raises
         ------
@@ -36,7 +34,6 @@ class HomophonicSolver:
             raise ValueError("Ciphertext cannot be empty.")
 
         self._ciphertext = ciphertext
-        self._random_iterations = random_iterations
 
         # This corresponds to K in the paper.
         self._putative_plaintext_key = None

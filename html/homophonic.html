@@ -27,7 +27,11 @@
 <pre><code class="python">from string import ascii_lowercase
 
 import numpy as np
-from consts import STANDARD_ALPHABET_LENGTH
+from consts import (
+    DIGRAM_FREQS_ENGLISH,
+    ENGLISH_LETTER_FREQUENCIES,
+    STANDARD_ALPHABET_SIZE,
+)
 
 
 class HomophonicSolver:
@@ -55,10 +59,68 @@ class HomophonicSolver:
         if len(ciphertext) &lt; 1:
             raise ValueError(&#34;Ciphertext cannot be empty.&#34;)
 
-        self.ciphertext = ciphertext
-        self.putative_plaintext_digram_frequencies = self._get_digram_frequencies(
-            ciphertext, standard_size=True
-        )
+        self._ciphertext = ciphertext
+
+        # This corresponds to K in the paper.
+        self._putative_plaintext_key = None
+
+        # This corresponds to D_C in the paper and never changes.
+        self._ciphertext_digram_frequencies = self._get_digram_frequencies(ciphertext)
+
+        # This corresponds to D_P in the paper.
+        self._plaintext_digram_frequencies = None
+
+        alphabet_size = self._get_num_distinct_letters(ciphertext)
+        self._frequency_distribution = self._get_frequency_distribution(alphabet_size)
+
+        self._best_key = None
+        self._best_initial_key = None
+
+    def _get_frequency_distribution(self, alphabet_size):
+        &#34;&#34;&#34;Return frequency distribution based on alphabet size. The returned numpy
+        array contains the number of occurrences in alphabetical order.&#34;&#34;&#34;
+
+        # Alphabet size must be at least 26.
+        if alphabet_size &lt; STANDARD_ALPHABET_SIZE:
+            alphabet_size = STANDARD_ALPHABET_SIZE
+
+        # Assume each letter will be mapped at least once.
+        tmp_distribution = [1] * STANDARD_ALPHABET_SIZE
+
+        frequencies = list(ENGLISH_LETTER_FREQUENCIES.values())
+
+        # If there are more letters than in the English alphabet, distribute them over
+        # the entire range according to letter frequencies.
+        for _ in range(alphabet_size - STANDARD_ALPHABET_SIZE):
+            max_freq = 0
+            for j in range(STANDARD_ALPHABET_SIZE):
+                tmp = tmp_distribution[j] + 1
+                tmp_freq = frequencies[j] / tmp
+                if tmp_freq &gt; max_freq:
+                    max_freq = tmp_freq
+                    max_index = j
+            tmp_distribution[max_index] += 1
+
+        # Just make sure the distribution still adds up to the alphabet size.
+        s = sum(tmp_distribution)
+        if s != alphabet_size:
+            raise Exception(
+                f&#34;Frequency distribution mismatch, distribution adds up to {s} instead of {alphabet_size}&#34;
+            )
+
+        # Sort array alphabetically.
+        distribution = np.zeros(STANDARD_ALPHABET_SIZE)
+        letters_by_frequency = ENGLISH_LETTER_FREQUENCIES.keys()
+        for letter, occurrences in zip(letters_by_frequency, tmp_distribution):
+            index = ascii_lowercase.index(letter)
+            distribution[index] = occurrences
+
+        return distribution
+
+    def _get_num_distinct_letters(self, text):
+        &#34;&#34;&#34;Return the number of distinct letters in the passed text.&#34;&#34;&#34;
+
+        return len(set(text))
 
     def _get_digram_frequencies(self, text, standard_size=False):
         &#34;&#34;&#34;Generate digram frequencies for the passed text.
@@ -88,7 +150,7 @@ class HomophonicSolver:
         if len(text) &lt; 2:
             raise ValueError(f&#34;{text} must be at least two letters.&#34;)
 
-        n = STANDARD_ALPHABET_LENGTH if standard_size else len(set(text))
+        n = STANDARD_ALPHABET_SIZE if standard_size else len(set(text))
         frequencies = np.zeros((n, n))
 
         text_length = len(text)
@@ -108,7 +170,22 @@ class HomophonicSolver:
 
         return frequencies
 
+    def _update_plaintext_digram_frequencies(self):
+        &#34;&#34;&#34;Update the current putative plaintext digram frequencies using the initially
+        saved ciphertext digram frequencies.&#34;&#34;&#34;
+
+        pass
+
+    def _score(self, matrix1, matrix2=DIGRAM_FREQS_ENGLISH):
+        if matrix1.shape != matrix2.shape:
+            raise ValueError(&#34;Digram frequency matrices must have the same dimensions&#34;)
+
+        return abs(matrix1 - matrix2).sum()
+
     def _outer_hill_climb(self):
+        &#34;&#34;&#34;Run the outer hill climb that determines the optimal distribution of
+        characters when mapping the ciphertest alphabet to the plaintext alphabet.&#34;&#34;&#34;
+
         # OuterHillClimb
         # global K = bestInitKey = bestKey = NULL
         # parse ciphertext to determine DC
@@ -139,7 +216,30 @@ class HomophonicSolver:
         # next i
         # return bestKey
 
-        pass
+        distribution = np.copy(self._frequency_distribution)
+
+        best_score = self._random_initial_key(distribution)
+        self._best_key = self._best_initial_key
+        for i in range(STANDARD_ALPHABET_SIZE - 1):
+            for j in range(STANDARD_ALPHABET_SIZE - i):
+                tmp_distribution = np.copy(distribution)
+                # Outer swap:
+                tmp_distribution[j] += 1
+                tmp_distribution[j + i] -= 1
+                score = self._random_initial_key(tmp_distribution)
+                if score &lt; best_score:
+                    distribution = np.copy(tmp_distribution)
+                    best_score = score
+                    self._best_key = self._best_initial_key
+                else:
+                    tmp_distribution = np.copy(distribution)
+                    tmp_distribution[j + i] += 1
+                    tmp_distribution[j] -= 1
+                    score = self._random_initial_key(tmp_distribution)
+                    if score &lt; best_score:
+                        distribution = np.copy(tmp_distribution)
+                        best_score = score
+                        self._best_key = self._best_initial_key
 
     def _random_initial_key(self):
         # RandomInitialKey(na, nb, ..., nz)
@@ -176,14 +276,8 @@ class HomophonicSolver:
 
         pass
 
-    def solve(self, random_iterations=40):
-        &#34;&#34;&#34;Run the solver.
-
-        Parameters
-        ----------
-        random_iterations : int
-            The number of iterations to use at the random initial key layer.
-        &#34;&#34;&#34;
+    def solve(self):
+        &#34;&#34;&#34;Run the solver.&#34;&#34;&#34;
 
         pass
 
@@ -260,10 +354,68 @@ class HomophonicSolver:
         if len(ciphertext) &lt; 1:
             raise ValueError(&#34;Ciphertext cannot be empty.&#34;)
 
-        self.ciphertext = ciphertext
-        self.putative_plaintext_digram_frequencies = self._get_digram_frequencies(
-            ciphertext, standard_size=True
-        )
+        self._ciphertext = ciphertext
+
+        # This corresponds to K in the paper.
+        self._putative_plaintext_key = None
+
+        # This corresponds to D_C in the paper and never changes.
+        self._ciphertext_digram_frequencies = self._get_digram_frequencies(ciphertext)
+
+        # This corresponds to D_P in the paper.
+        self._plaintext_digram_frequencies = None
+
+        alphabet_size = self._get_num_distinct_letters(ciphertext)
+        self._frequency_distribution = self._get_frequency_distribution(alphabet_size)
+
+        self._best_key = None
+        self._best_initial_key = None
+
+    def _get_frequency_distribution(self, alphabet_size):
+        &#34;&#34;&#34;Return frequency distribution based on alphabet size. The returned numpy
+        array contains the number of occurrences in alphabetical order.&#34;&#34;&#34;
+
+        # Alphabet size must be at least 26.
+        if alphabet_size &lt; STANDARD_ALPHABET_SIZE:
+            alphabet_size = STANDARD_ALPHABET_SIZE
+
+        # Assume each letter will be mapped at least once.
+        tmp_distribution = [1] * STANDARD_ALPHABET_SIZE
+
+        frequencies = list(ENGLISH_LETTER_FREQUENCIES.values())
+
+        # If there are more letters than in the English alphabet, distribute them over
+        # the entire range according to letter frequencies.
+        for _ in range(alphabet_size - STANDARD_ALPHABET_SIZE):
+            max_freq = 0
+            for j in range(STANDARD_ALPHABET_SIZE):
+                tmp = tmp_distribution[j] + 1
+                tmp_freq = frequencies[j] / tmp
+                if tmp_freq &gt; max_freq:
+                    max_freq = tmp_freq
+                    max_index = j
+            tmp_distribution[max_index] += 1
+
+        # Just make sure the distribution still adds up to the alphabet size.
+        s = sum(tmp_distribution)
+        if s != alphabet_size:
+            raise Exception(
+                f&#34;Frequency distribution mismatch, distribution adds up to {s} instead of {alphabet_size}&#34;
+            )
+
+        # Sort array alphabetically.
+        distribution = np.zeros(STANDARD_ALPHABET_SIZE)
+        letters_by_frequency = ENGLISH_LETTER_FREQUENCIES.keys()
+        for letter, occurrences in zip(letters_by_frequency, tmp_distribution):
+            index = ascii_lowercase.index(letter)
+            distribution[index] = occurrences
+
+        return distribution
+
+    def _get_num_distinct_letters(self, text):
+        &#34;&#34;&#34;Return the number of distinct letters in the passed text.&#34;&#34;&#34;
+
+        return len(set(text))
 
     def _get_digram_frequencies(self, text, standard_size=False):
         &#34;&#34;&#34;Generate digram frequencies for the passed text.
@@ -293,7 +445,7 @@ class HomophonicSolver:
         if len(text) &lt; 2:
             raise ValueError(f&#34;{text} must be at least two letters.&#34;)
 
-        n = STANDARD_ALPHABET_LENGTH if standard_size else len(set(text))
+        n = STANDARD_ALPHABET_SIZE if standard_size else len(set(text))
         frequencies = np.zeros((n, n))
 
         text_length = len(text)
@@ -313,7 +465,22 @@ class HomophonicSolver:
 
         return frequencies
 
+    def _update_plaintext_digram_frequencies(self):
+        &#34;&#34;&#34;Update the current putative plaintext digram frequencies using the initially
+        saved ciphertext digram frequencies.&#34;&#34;&#34;
+
+        pass
+
+    def _score(self, matrix1, matrix2=DIGRAM_FREQS_ENGLISH):
+        if matrix1.shape != matrix2.shape:
+            raise ValueError(&#34;Digram frequency matrices must have the same dimensions&#34;)
+
+        return abs(matrix1 - matrix2).sum()
+
     def _outer_hill_climb(self):
+        &#34;&#34;&#34;Run the outer hill climb that determines the optimal distribution of
+        characters when mapping the ciphertest alphabet to the plaintext alphabet.&#34;&#34;&#34;
+
         # OuterHillClimb
         # global K = bestInitKey = bestKey = NULL
         # parse ciphertext to determine DC
@@ -344,7 +511,30 @@ class HomophonicSolver:
         # next i
         # return bestKey
 
-        pass
+        distribution = np.copy(self._frequency_distribution)
+
+        best_score = self._random_initial_key(distribution)
+        self._best_key = self._best_initial_key
+        for i in range(STANDARD_ALPHABET_SIZE - 1):
+            for j in range(STANDARD_ALPHABET_SIZE - i):
+                tmp_distribution = np.copy(distribution)
+                # Outer swap:
+                tmp_distribution[j] += 1
+                tmp_distribution[j + i] -= 1
+                score = self._random_initial_key(tmp_distribution)
+                if score &lt; best_score:
+                    distribution = np.copy(tmp_distribution)
+                    best_score = score
+                    self._best_key = self._best_initial_key
+                else:
+                    tmp_distribution = np.copy(distribution)
+                    tmp_distribution[j + i] += 1
+                    tmp_distribution[j] -= 1
+                    score = self._random_initial_key(tmp_distribution)
+                    if score &lt; best_score:
+                        distribution = np.copy(tmp_distribution)
+                        best_score = score
+                        self._best_key = self._best_initial_key
 
     def _random_initial_key(self):
         # RandomInitialKey(na, nb, ..., nz)
@@ -381,14 +571,8 @@ class HomophonicSolver:
 
         pass
 
-    def solve(self, random_iterations=40):
-        &#34;&#34;&#34;Run the solver.
-
-        Parameters
-        ----------
-        random_iterations : int
-            The number of iterations to use at the random initial key layer.
-        &#34;&#34;&#34;
+    def solve(self):
+        &#34;&#34;&#34;Run the solver.&#34;&#34;&#34;
 
         pass
 
@@ -411,27 +595,16 @@ class HomophonicSolver:
 <h3>Methods</h3>
 <dl>
 <dt id="homophonic.HomophonicSolver.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>self, random_iterations=40)</span>
+<span>def <span class="ident">solve</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Run the solver.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>random_iterations</code></strong> :&ensp;<code>int</code></dt>
-<dd>The number of iterations to use at the random initial key layer.</dd>
-</dl></div>
+<div class="desc"><p>Run the solver.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(self, random_iterations=40):
-    &#34;&#34;&#34;Run the solver.
-
-    Parameters
-    ----------
-    random_iterations : int
-        The number of iterations to use at the random initial key layer.
-    &#34;&#34;&#34;
+<pre><code class="python">def solve(self):
+    &#34;&#34;&#34;Run the solver.&#34;&#34;&#34;
 
     pass</code></pre>
 </details>
