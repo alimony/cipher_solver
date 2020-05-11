@@ -253,7 +253,7 @@ class HomophonicSolver:
 
         return best_initial_score
 
-    def _inner_hill_climb(self):
+    def _inner_hill_climb(self, digram_frequencies):
         # InnerHillClimb(DP)
         # innerScore = d(DP, E)
         # for i = 1 to n − 1
@@ -270,7 +270,22 @@ class HomophonicSolver:
         # next i
         # return innerScore
 
-        pass
+        inner_score = self._score(digram_frequencies)
+
+        for i in range(self._alphabet_size):
+            for j in range(self._alphabet_size - i):
+                key = np.copy(self._putative_plaintext_key)
+                key[j], key[j + 1] = key[j + 1], key[j]  # Swap.
+                new_digram_frequencies = self._get_digram_frequencies(
+                    digram_frequencies, key
+                )
+                new_score = self._score(new_digram_frequencies)
+                if new_score < inner_score:
+                    inner_score = new_score
+                    self._putative_plaintext_key = key
+                    self._plaintext_digram_frequencies = new_digram_frequencies
+
+        return inner_score
 
     def solve(self):
         """Run the solver."""
