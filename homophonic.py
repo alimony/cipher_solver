@@ -4,6 +4,7 @@ import numpy as np
 from consts import (
     DIGRAM_FREQS_ENGLISH,
     ENGLISH_LETTER_FREQUENCIES,
+    RANDOM_ITERATIONS,
     STANDARD_ALPHABET_SIZE,
 )
 
@@ -220,7 +221,12 @@ class HomophonicSolver:
                         best_score = score
                         self._best_key = self._best_initial_key
 
-    def _random_initial_key(self):
+    def _key_from_distribution(distribution):
+        """Return a key that satisfies the given distribution."""
+
+        pass
+
+    def _random_initial_key(self, distribution):
         # RandomInitialKey(na, nb, ..., nz)
         # bestInitScore = ∞
         # for r = 1 to R
@@ -234,7 +240,18 @@ class HomophonicSolver:
         # next r
         # return bestInitScore
 
-        pass
+        best_initial_score = float("inf")
+
+        for _ in range(RANDOM_ITERATIONS):
+            k = self._key_from_distribution(distribution)
+            self._putative_plaintext_key = k
+            self._update_plaintext_digram_frequencies(k)
+            initial_score = self._inner_hill_climb(self._plaintext_digram_frequencies)
+            if initial_score < best_initial_score:
+                best_initial_score = initial_score
+                self._best_initial_key = k
+
+        return best_initial_score
 
     def _inner_hill_climb(self):
         # InnerHillClimb(DP)
