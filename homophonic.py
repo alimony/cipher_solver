@@ -144,9 +144,9 @@ class HomophonicSolver:
 
         return frequencies
 
-    def _update_plaintext_digram_frequencies(self):
+    def _update_plaintext_digram_frequencies(self, key):
         """Update the current putative plaintext digram frequencies using the initially
-        saved ciphertext digram frequencies."""
+        saved ciphertext digram frequencies and the passed key."""
 
         pass
 
