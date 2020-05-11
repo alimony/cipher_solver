@@ -2,6 +2,9 @@
 
 import numpy as np
 
+# Random iterations to use at the random initial key layer.
+RANDOM_ITERATIONS = 40
+
 # English alphabet has 26 letters.
 STANDARD_ALPHABET_SIZE = 26
 
