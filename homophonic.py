@@ -33,7 +33,12 @@ class HomophonicSolver:
         if len(ciphertext) < 1:
             raise ValueError("Ciphertext cannot be empty.")
 
-        self._ciphertext = ciphertext
+        self._ciphertext = ciphertext.lower()
+
+        alphabet = str(sorted(list(set(ciphertext))))
+        self._alphabet = (
+            alphabet if len(alphabet) > STANDARD_ALPHABET_SIZE else ascii_lowercase
+        )
 
         # This corresponds to K in the paper.
         self._putative_plaintext_key = None
