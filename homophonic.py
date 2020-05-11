@@ -244,13 +244,12 @@ class HomophonicSolver:
         best_initial_score = float("inf")
 
         for _ in range(RANDOM_ITERATIONS):
-            k = self._key_from_distribution(distribution)
-            self._putative_plaintext_key = k
-            self._update_plaintext_digram_frequencies(k)
+            self._putative_plaintext_key = self._key_from_distribution(distribution)
+            self._update_plaintext_digram_frequencies(self._putative_plaintext_key)
             initial_score = self._inner_hill_climb(self._plaintext_digram_frequencies)
             if initial_score < best_initial_score:
                 best_initial_score = initial_score
-                self._best_initial_key = k
+                self._best_initial_key = self._putative_plaintext_key
 
         return best_initial_score
 
