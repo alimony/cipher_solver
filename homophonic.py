@@ -57,6 +57,10 @@ class HomophonicSolver:
         """Return frequency distribution based on alphabet size. The returned numpy
         array contains the number of occurrences in alphabetical order."""
 
+        # Alphabet size must be at least 26.
+        if alphabet_size < STANDARD_ALPHABET_SIZE:
+            alphabet_size = STANDARD_ALPHABET_SIZE
+
         # Assume each letter will be mapped at least once.
         tmp_distribution = [1] * STANDARD_ALPHABET_SIZE
 
@@ -75,7 +79,11 @@ class HomophonicSolver:
             tmp_distribution[max_index] += 1
 
         # Just make sure the distribution still adds up to the alphabet size.
-        assert sum(tmp_distribution) == alphabet_size
+        s = sum(tmp_distribution)
+        if s != alphabet_size:
+            raise Exception(
+                f"Frequency distribution mismatch, distribution adds up to {s} instead of {alphabet_size}"
+            )
 
         # Sort array alphabetically.
         distribution = np.zeros(STANDARD_ALPHABET_SIZE)
