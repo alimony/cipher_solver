@@ -1,26 +1,27 @@
-# Homophonic Solver
+# Substitution Cipher Solvers
 
-### An algorithm for solving homophonic substitution ciphers
+### Algorithms for solving substitution ciphers
 
-This is a Python implementation of the nested hill climb algorithm for solving
-[homophonic substitution ciphers](https://en.wikipedia.org/wiki/Substitution_cipher#Homophonic_substitution)
-described in the paper
-[“Efficient Cryptanalysis of Homophonic Substitution Ciphers”](http://www.cs.sjsu.edu/~stamp/RUA/homophonic.pdf)
-by Amrapali Dhavare, Richard M. Low, and Mark Stamp.
+This is a collection of Python implementations of fast algorithms for solving
+[substitution ciphers](https://en.wikipedia.org/wiki/Substitution_cipher) based on
+various scientific papers. Currently included are:
+
+* [“A Fast Method for the Cryptanalysis of Substitution Ciphers”](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.55.89&rep=rep1&type=pdf)  
+  by Thomas Jakobsen
 
 #### API
 
 ```python
-class HomophonicSolver:
-    """Homophonic substitution cipher solver."""
+class SimpleSolver:
+    """Simple substitution cipher solver."""
 
     def __init__(self, ciphertext):
         """Create new solver.
 
-        This creates a new homophonic cipher solver from an initial ciphertext.
+        This creates a new simple cipher solver from an initial ciphertext.
         """
 
-    def solve(self, random_iterations=40):
+    def solve(self):
         """Run the solver."""
 
     def plaintext(self):
@@ -29,21 +30,20 @@ class HomophonicSolver:
     def reset(self):
         """Discard the current solution and reset the solver."""
 ```
-See the [documentation](html/homophonic.html) for full description of methods and their
-parameters.
+See the [documentation]() for full description of methods and their parameters.
 
 #### Usage
 
 ```python
-from homophonic import HomophonicSolver
+from simple import SimpleSolver
 
 # Solve a cipher.
-h = HomophonicSolver("F7EZ5FUC21DR6M9PP0E6CZ SD4UP1")
+h = SimpleSolver("uknkgmhksztkmexmpbxtgxesxe")
 h.solve()
-print(h.plaintext())  # "DEFENDTHEEASTWALLOFTHECASTLE"
+print(h.plaintext())  # "iamalreadyfarnorthoflondon"
 
 # Solve a new cipher.
-h = HomophonicSolver("VPk|1LTG2dNp+B(#O%DWY.<*Kf)By:cM+UZG")
+h = SimpleSolver("keskvuakgluepbhvpmhhpvxtwhphmvydmrbuthhgkfxgsexmpbhmeymhhoh")
 print(h.plaintext())  # None, since solver hasn't run yet.
 h.solve()
 print(h.plaintext())  # We might have a good solution now... or not.
@@ -59,7 +59,7 @@ A simple command-line interface is included. To solve a cipher, put it into a te
 using whatever alphabet is suitable, and run:
 
 ```bash
-solve.py [--lang=en] <path_to_ciphertext_file>
+solve.py [--lang=en] [--type=simple] <path_to_ciphertext_file>
 ```
 
 #### Running tests
