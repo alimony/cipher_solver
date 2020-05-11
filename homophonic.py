@@ -37,9 +37,11 @@ class HomophonicSolver:
         self._ciphertext = ciphertext.lower()
 
         alphabet = str(sorted(list(set(ciphertext))))
+        alphabet_size = len(alphabet)
         self._alphabet = (
-            alphabet if len(alphabet) > STANDARD_ALPHABET_SIZE else ascii_lowercase
+            alphabet if alphabet_size > STANDARD_ALPHABET_SIZE else ascii_lowercase
         )
+        self._alphabet_size = alphabet_size
 
         # This corresponds to K in the paper.
         self._putative_plaintext_key = None
@@ -50,7 +52,6 @@ class HomophonicSolver:
         # This corresponds to D_P in the paper.
         self._plaintext_digram_frequencies = None
 
-        alphabet_size = self._get_num_distinct_letters(ciphertext)
         self._frequency_distribution = self._get_frequency_distribution(alphabet_size)
 
         self._best_key = None
