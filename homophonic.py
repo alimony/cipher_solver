@@ -1,3 +1,4 @@
+from random import sample
 from string import ascii_lowercase
 
 import numpy as np
@@ -222,12 +223,20 @@ class HomophonicSolver:
                         best_score = score
                         self._best_key = self._best_initial_key
 
-    def _key_from_distribution(distribution):
+    def _key_from_distribution(self, distribution):
         """Return a key that satisfies the given distribution."""
 
-        pass
+        randomised_alphabet = "".join(sample(ascii_lowercase, STANDARD_ALPHABET_SIZE))
+        key = ""
+        for letter, occurrences in zip(randomised_alphabet, distribution):
+            key += letter * occurrences
+
+        return key
 
     def _random_initial_key(self, distribution):
+        """Run the random initial key generation that uses the distribution provided by
+        the outer hill climb to construct starting keys for the inner hill climb."""
+
         # RandomInitialKey(na, nb, ..., nz)
         # bestInitScore = ∞
         # for r = 1 to R

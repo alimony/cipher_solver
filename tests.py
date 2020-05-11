@@ -147,7 +147,7 @@ class HomophonicSolverTestCase(unittest.TestCase):
             (55, np.array([4, 1, 1, 2, 7, 1, 1, 2, 4, 1, 1, 2, 1, 4, 4, 1, 1, 3, 3, 5, 1, 1, 1, 1, 1, 1])),  # noqa
             (65, np.array([5, 1, 2, 2, 8, 1, 1, 3, 5, 1, 1, 2, 1, 5, 5, 1, 1, 4, 4, 6, 1, 1, 1, 1, 1, 1])),  # noqa
             (75, np.array([6, 1, 2, 3, 9, 1, 1, 4, 6, 1, 1, 3, 1, 5, 6, 1, 1, 4, 5, 7, 2, 1, 1, 1, 1, 1])),  # noqa
-            (85, np.array([7, 1, 3, 3,11, 2, 1, 4, 6, 1, 1, 3, 2, 6, 7,1, 1, 5, 5, 8, 2, 1, 1, 1, 1, 1])),  # noqa
+            (85, np.array([7, 1, 3, 3, 11, 2, 1, 4, 6, 1, 1, 3, 2, 6, 7,1, 1, 5, 5, 8, 2, 1, 1, 1, 1, 1])),  # noqa
             (95, np.array([8, 1, 3, 3, 12, 2, 1, 5, 7, 1, 1, 4, 2, 7, 7, 2, 1, 6, 6, 9, 2, 1, 1, 1, 1, 1])),  # noqa
         )
         # fmt: on
@@ -158,3 +158,18 @@ class HomophonicSolverTestCase(unittest.TestCase):
                     h._get_frequency_distribution(alphabet_size), distribution
                 )
             )
+
+    def test_key_from_distribution(self):
+        """Test that key suggestions from distributions are correctly generated."""
+
+        h = HomophonicSolver(ascii_lowercase)
+
+        # fmt: off
+        items = (
+            np.array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1])  # noqa
+        )
+        # fmt: on
+
+        for distribution in items:
+            key = h._key_from_distribution(distribution)
+            self.assertEqual(len(key), distribution.sum())
