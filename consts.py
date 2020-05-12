@@ -36,6 +36,9 @@ ENGLISH_LETTER_FREQUENCIES = {
     "z": 0.0009,
 }
 
+# The letters of the English alphabet sorted by frequency.
+ENGLISH_LETTERS_BY_FREQUENCY = "".join(ENGLISH_LETTER_FREQUENCIES.keys())
+
 # Source: http://norvig.com/mayzner.html
 # This is a (26 x 26) array containing the digram frequencies for the English language
 # and is used for scoring potential solutions. The row corresponds to the first letter
