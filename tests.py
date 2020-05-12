@@ -161,3 +161,26 @@ class SimpleSolverTestCase(unittest.TestCase):
 
         one_array = np.ones((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
         self.assertTrue(abs(602.13 - s._score(one_array)) < 0.1)
+
+    def test_get_common_letters(self):
+        s = SimpleSolver("foo")
+
+        items = (
+            ("aaabbc", "abc"),
+            ("cccccbbbaaaad", "cabd"),
+            ("aaaaaaaaaaaaaaaa", "a"),
+        )
+
+        for ciphertext, common_letters in items:
+            self.assertEqual(common_letters, s._get_common_letters(ciphertext))
+
+    def test_common_to_alphabetical_key(self):
+        s = SimpleSolver("foo")
+
+        items = (
+            (ENGLISH_LETTERS_BY_FREQUENCY, ascii_lowercase),
+            ("ocewzklnsxbfaqvthrdupmgijy", "eufbovhszimxqkwtjnlcaprgdy"),
+        )
+
+        for common_key, alpha_key in items:
+            self.assertEqual(alpha_key, s._common_to_alphabetical_key(common_key))
