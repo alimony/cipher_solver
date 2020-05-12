@@ -1,4 +1,5 @@
 import unittest
+from string import ascii_lowercase
 
 import numpy as np
 from consts import DIGRAM_FREQS_ENGLISH, STANDARD_ALPHABET_SIZE
@@ -11,18 +12,18 @@ class SimpleSolverTestCase(unittest.TestCase):
 
     def test_get_initial_key(self):
         items = (
-            ("aaabbc", "cdefaghijklmnopqrstbuvwxyz"),
-            ("aabbcc", "cdefaghijklmnopqrstbuvwxyz"),
-            ("abbccc", "adefcghijklmnopqrstbuvwxyz"),
-            ("abcdefghijklmnopqrstuvwxyz", "ctlkaoqiexvjnfdpyhgbmurwsz"),
-            ("oegefotneeahtvawwlgtnecahtwe", "abcledifojkvmgwpqhntrsuxyz"),
+            ("aaabbc", "abcdefghijklmnopqrstuvwxyz"),
+            ("aabbcc", "abcdefghijklmnopqrstuvwxyz"),
+            ("abbccc", "cbadefghijklmnopqrstuvwxyz"),
+            (ascii_lowercase, "abcdefghijklmnopqrstuvwxyz"),
+            ("oegefotneeahtvawwlgtnecahtwe", "etawognhfvlcbdijkmpqrsuxyz"),
         )
 
         for ciphertext, expected_initial_key in items:
             s = SimpleSolver(ciphertext)
             self.assertEqual(s._get_initial_key(ciphertext), expected_initial_key)
 
-    def test_plaintext(self):
+    def test_get_plaintext(self):
         items = (
             (
                 "oegefotneeahtvawwlgtnecahtwe",  # Ciphertext
@@ -33,8 +34,7 @@ class SimpleSolverTestCase(unittest.TestCase):
 
         for ciphertext, decryption_key, expected_plaintext in items:
             s = SimpleSolver(ciphertext)
-            s._decryption_key = decryption_key
-            self.assertEqual(s.plaintext(), expected_plaintext)
+            self.assertEqual(s._get_plaintext(decryption_key), expected_plaintext)
 
     def test_swap(self):
         s = SimpleSolver("foo")
