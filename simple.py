@@ -1,7 +1,7 @@
 from string import ascii_lowercase
 
 import numpy as np
-from consts import ENGLISH_LETTERS_BY_FREQUENCY, STANDARD_ALPHABET_SIZE
+from consts import STANDARD_ALPHABET_SIZE
 from solver import AbstractSolver
 
 
