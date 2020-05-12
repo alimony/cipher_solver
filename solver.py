@@ -81,11 +81,12 @@ class AbstractSolver(ABC):
         return frequencies
 
     def _get_plaintext(self, decryption_key):
+        if len(set(decryption_key)) != STANDARD_ALPHABET_SIZE:
+            raise ValueError(f"Key must include all letters of the alphabet.")
+
         translation_table = {}
 
-        for plain_letter, cipher_letter in zip(
-            ENGLISH_LETTERS_BY_FREQUENCY, decryption_key
-        ):
+        for cipher_letter, plain_letter in zip(decryption_key, ascii_lowercase):
             translation_table[cipher_letter] = plain_letter
 
         return "".join([translation_table[c] for c in self._ciphertext])
