@@ -60,6 +60,7 @@ class SimpleSolver(AbstractSolver):
         matrix[:, [index1, index2]] = matrix[:, [index2, index1]]
 
     def solve(self):
+        # We need this as a list so we can modify it in-place.
         key = [c for c in self._decryption_key]
 
         print(f"starting with key = {key}")
