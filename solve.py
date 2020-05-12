@@ -29,6 +29,8 @@ with open(input_file) as f:
 
 s = solver_class(ciphertext)
 
+print(f"Ciphertext:\n{ciphertext}")
+
 s.solve()
 
-print(s.plaintext())
+print(f"Plaintext:\n{s.plaintext()}")
