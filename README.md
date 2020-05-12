@@ -59,7 +59,7 @@ A simple command-line interface is included. To solve a cipher, put it into a te
 using whatever alphabet is suitable, and run:
 
 ```bash
-solve.py [--lang=en] [--type=simple] <path_to_ciphertext_file>
+solve.py [--type=simple] <path_to_ciphertext_file>
 ```
 
 #### Running tests
