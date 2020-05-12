@@ -30,11 +30,23 @@ class SimpleSolverTestCase(unittest.TestCase):
                 "abcoegindjkwmflpqshtruvxyz",  # Decryption key
                 "defendtheeastwallofthecastle",  # Plaintext
             ),
+            (
+                "nzkzdnufzzoqulowwrkufzgoquwz",
+                "otgnzkjfvhiwcdrmxsqupelbay",
+                "defendtheeastwallofthecastle",
+            ),
+            (
+                "jyfyijewyyndeqnppkfewyandepy",
+                "nbajyfowlzmpxikuvcdegrqsth",
+                "defendtheeastwallofthecastle",
+            ),
         )
 
-        for ciphertext, decryption_key, expected_plaintext in items:
+        for ciphertext, alphabetical_decryption_key, expected_plaintext in items:
             s = SimpleSolver(ciphertext)
-            self.assertEqual(s._get_plaintext(decryption_key), expected_plaintext)
+            self.assertEqual(
+                s._get_plaintext(alphabetical_decryption_key), expected_plaintext
+            )
 
     def test_swap(self):
         s = SimpleSolver("foo")
