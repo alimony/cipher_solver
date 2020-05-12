@@ -80,6 +80,15 @@ class AbstractSolver(ABC):
 
         return frequencies
 
+    def _common_to_alphabetical_key(self, key):
+        alphabetical_key = [""] * STANDARD_ALPHABET_SIZE
+
+        for key_letter, english_letter in zip(key, ENGLISH_LETTERS_BY_FREQUENCY):
+            index = ascii_lowercase.index(english_letter)
+            alphabetical_key[index] = key_letter
+
+        return "".join(alphabetical_key)
+
     def _get_plaintext(self, decryption_key):
         if len(set(decryption_key)) != STANDARD_ALPHABET_SIZE:
             raise ValueError(f"Key must include all letters of the alphabet.")
