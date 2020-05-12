@@ -178,6 +178,18 @@ class SimpleSolverTestCase(unittest.TestCase):
         one_array = np.ones((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
         self.assertTrue(abs(602.13 - s._score(one_array)) < 0.1)
 
+        # fmt: off
+        m1 = np.array([
+            [1, 2],
+            [3, 4],
+        ])
+        m2 = np.array([
+            [2, 3],
+            [4, 5],
+        ])
+        # fmt: on
+        self.assertEqual(s._score(m1, m2), 4)
+
     def test_get_common_letters(self):
         s = SimpleSolver("foo")
 
