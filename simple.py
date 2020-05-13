@@ -1,6 +1,6 @@
 from collections import Counter
 from random import randint
-from string import ascii_lowercase
+from string import ascii_lowercase, ascii_uppercase
 
 import numpy as np
 from consts import (
@@ -64,7 +64,7 @@ class SimpleSolver:
         # English alphabet which is the common way to express decryption keys.
         self._decryption_key = self._get_initial_key(ciphertext)
 
-        self._ciphertext = ciphertext.lower()
+        self._ciphertext = ciphertext
 
     def _get_initial_key(self, ciphertext):
         """Construct the initial decryption key.
@@ -286,7 +286,16 @@ class SimpleSolver:
             plain_letter = ascii_lowercase[index]
             translation_table[key_letter] = plain_letter
 
-        return "".join([translation_table.get(c, c) for c in self._ciphertext])
+        plaintext = ""
+
+        for c in self._ciphertext:
+            is_upper = c in ascii_uppercase
+            letter = translation_table.get(c.lower(), c)
+            if is_upper:
+                letter = letter.upper()
+            plaintext += letter
+
+        return plaintext
 
     def _solve_naive(self):
         """Solve cipher using the naive algorithm based on random key swaps.

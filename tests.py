@@ -196,6 +196,12 @@ class SimpleSolverTestCase(unittest.TestCase):
                 "zrtlxeuqjsdnkpymgbhiacfwov",
                 "defendtheeastwallofthecastle",
             ),
+            # Make sure case and special chars are preserved:
+            (
+                "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+                ENGLISH_LETTERS_BY_FREQUENCY,
+                "Lorem ipsum dolor sit amet, consectetur adipisicing elit.",
+            ),
         )
 
         for ciphertext, common_key, expected_plaintext in items:
