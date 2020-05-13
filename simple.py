@@ -207,7 +207,7 @@ class SimpleSolver:
 
         translation_table = {}
 
-        for key_letter, index in zip(common_key, indices):
+        for key_letter, index in zip(decryption_key, indices):
             plain_letter = ascii_lowercase[index]
             translation_table[key_letter] = plain_letter
 
