@@ -23,6 +23,7 @@ class SimpleSolver:
     "plaintext" : The decrypted plaintext using a certain decryption key.
     "common key" : Key used to generate a plaintext, ordered by most common letter.
     "alphabetical key" : Decryption key, but ordered alphabetically.
+    "decryption key" : Assumed to mean a common key if nothing else is specified.
     "digram" : A pair of letters, e.g. "aa", "cd" etc.
     "digram matrix" : An (n x n) matrix, where n is the length of the used alphabet,
                       created from a given text, where the frequency of each digram
