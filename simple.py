@@ -120,7 +120,9 @@ class SimpleSolver:
             raise ValueError("Text must not be empty.")
 
         c = Counter(text)
-        return "".join([letter[0] for letter in c.most_common()])
+        return "".join(
+            [letter[0] for letter in c.most_common() if letter[0] in ascii_lowercase]
+        )
 
     def _get_digram_matrix(self, text, alphabet_size=STANDARD_ALPHABET_SIZE):
         """Generate digram matrix for the passed text.
