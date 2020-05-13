@@ -49,43 +49,25 @@ class SimpleSolverTestCase(unittest.TestCase):
     def test_get_plaintext(self):
         items = (
             (
-                "oegefotneeahtvawwlgtnecahtwe",  # Ciphertext
-                "abcoegindjkwmflpqshtruvxyz",  # Decryption key
+                "qemeiqtxeeuktyuggjmtxesuktge",  # Ciphertext
+                "etujdikzxgqswbmcfyhanpvlor",  # Common decryption key
                 "defendtheeastwallofthecastle",  # Plaintext
             ),
             (
-                "nzkzdnufzzoqulowwrkufzgoquwz",
-                "otgnzkjfvhiwcdrmxsqupelbay",
+                "uaqaxuryaaljrklvvpqryadljrva",
+                "arlpsxjcyvudgoqfekiwmntzbh",
                 "defendtheeastwallofthecastle",
             ),
             (
-                "jyfyijewyyndeqnppkfewyandepy",
-                "nbajyfowlzmpxikuvcdegrqsth",
+                "dzyzedrjzzturbtsslyrjzntursz",
+                "zrtlxeuqjsdnkpymgbhiacfwov",
                 "defendtheeastwallofthecastle",
             ),
         )
 
-        for ciphertext, alphabetical_decryption_key, expected_plaintext in items:
+        for ciphertext, common_key, expected_plaintext in items:
             s = SimpleSolver(ciphertext)
-            self.assertEqual(
-                s._get_plaintext(alphabetical_decryption_key), expected_plaintext
-            )
-
-    def test_plaintext(self):
-        items = (
-            # A key in common order that converts to the English alphabet when
-            # decrypting should decipher any text to itself.
-            (
-                "defendtheeastwallofthecastle",  # Ciphertext
-                ENGLISH_LETTERS_BY_FREQUENCY,  # Decryption key
-                "defendtheeastwallofthecastle",  # Plaintext
-            ),
-        )
-
-        for ciphertext, common_decryption_key, expected_plaintext in items:
-            s = SimpleSolver(ciphertext)
-            s._decryption_key = common_decryption_key
-            self.assertEqual(s.plaintext(), expected_plaintext)
+            self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
 
     def test_swap(self):
         s = SimpleSolver("foo")
