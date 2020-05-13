@@ -39,6 +39,12 @@ class SimpleSolverTestCase(unittest.TestCase):
         self.assertEqual(s._decryption_key, "ofabcdeghijklmnpqrstuvwxyz")
         self.assertEqual(s._ciphertext, "foo")
 
+        items = ("", [], None)
+
+        for arg in items:
+            with self.assertRaises(ValueError):
+                s = SimpleSolver(arg)
+
     def test_get_initial_key(self):
         items = (
             ("aaabbc", "abcdefghijklmnopqrstuvwxyz"),
@@ -52,6 +58,12 @@ class SimpleSolverTestCase(unittest.TestCase):
             s = SimpleSolver(ciphertext)
             self.assertEqual(s._get_initial_key(ciphertext), expected_initial_key)
 
+        items = ("", [], None)
+
+        for ciphertext in items:
+            with self.assertRaises(ValueError):
+                s._get_initial_key(ciphertext)
+
     def test_get_common_letters(self):
         s = SimpleSolver("foo")
 
@@ -63,6 +75,10 @@ class SimpleSolverTestCase(unittest.TestCase):
 
         for ciphertext, common_letters in items:
             self.assertEqual(common_letters, s._get_common_letters(ciphertext))
+
+        for ciphertext in items:
+            with self.assertRaises(ValueError):
+                s._get_initial_key(ciphertext)
 
     def test_get_digram_matrix(self):
         s = SimpleSolver("foo")
@@ -116,6 +132,16 @@ class SimpleSolverTestCase(unittest.TestCase):
                         np.allclose(digram_frequencies, expected_frequencies)
                     )
 
+        items = (
+            ("foo", "bar"),
+            ("foo", 0),
+            ("f", 0),
+        )
+
+        for text, alphabet_size in items:
+            with self.assertRaises(ValueError):
+                s._get_digram_matrix(text, alphabet_size)
+
     def test_score(self):
         s = SimpleSolver("foo")
 
@@ -140,6 +166,9 @@ class SimpleSolverTestCase(unittest.TestCase):
         ])
         # fmt: on
         self.assertEqual(s._score(m1, m2), 4)
+
+        with self.assertRaises(ValueError):
+            s._score(np.array([1, 2]), np.array([1, 2, 3]))
 
     def test_swap(self):
         s = SimpleSolver("foo")
@@ -219,6 +248,12 @@ class SimpleSolverTestCase(unittest.TestCase):
         for ciphertext, common_key, expected_plaintext in items:
             s = SimpleSolver(ciphertext)
             self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
+
+        with self.assertRaises(ValueError):
+            s._get_plaintext("abc")
+
+        with self.assertRaises(ValueError):
+            s._get_plaintext(ascii_lowercase[1:])
 
     def test_public_api(self):
         s = SimpleSolver("qemeiqtxeeuktyuggjmtxesuktge")
