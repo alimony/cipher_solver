@@ -74,6 +74,8 @@ class SimpleSolver:
         text = text.lower()
         text_length = len(text)
 
+        # First, count the number of occurrences of each letter and save to the index
+        # that corresponds to the letter pair, i.e. frequencies[0, 0] is for "aa" etc.
         for i in range(0, text_length - 1):
             a = ascii_lowercase.index(text[i])
             b = ascii_lowercase.index(text[i + 1])
@@ -84,6 +86,7 @@ class SimpleSolver:
         rows, columns = frequencies.shape
         for i in range(rows):
             for j in range(columns):
+                # All digram frequencies are in percentages, so convert it here too.
                 frequencies[i, j] = 100 * frequencies[i, j] / text_length
 
         return frequencies
