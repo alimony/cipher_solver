@@ -25,10 +25,205 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import unittest
+from string import ascii_lowercase
+
+import numpy as np
+from consts import (
+    DIGRAM_MATRIX_ENGLISH,
+    ENGLISH_LETTER_FREQUENCIES,
+    ENGLISH_LETTERS_BY_FREQUENCY,
+    STANDARD_ALPHABET_SIZE,
+)
+from simple import SimpleSolver
+from utils import alphabetical_to_common_key, common_to_alphabetical_key
 
 
 class SimpleSolverTestCase(unittest.TestCase):
-    pass</code></pre>
+    def test_constants(self):
+        self.assertTrue(100 - DIGRAM_MATRIX_ENGLISH.sum() &lt; 0.01)
+        self.assertTrue(1 - sum(ENGLISH_LETTER_FREQUENCIES.values()) &lt; 0.001)
+        self.assertEqual(len(ENGLISH_LETTER_FREQUENCIES), STANDARD_ALPHABET_SIZE)
+        self.assertEqual(len(ENGLISH_LETTERS_BY_FREQUENCY), STANDARD_ALPHABET_SIZE)
+
+    def test_utils(self):
+        items = (
+            (ENGLISH_LETTERS_BY_FREQUENCY, ascii_lowercase),
+            (&#34;ocewzklnsxbfaqvthrdupmgijy&#34;, &#34;eufbovhszimxqkwtjnlcaprgdy&#34;),
+        )
+
+        # Test conversion from common to alphabetical key.
+        for common_key, alpha_key in items:
+            self.assertEqual(alpha_key, common_to_alphabetical_key(common_key))
+
+        # Test conversion from alphabetical key to common key.
+        for common_key, alpha_key in items:
+            self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
+
+    def test_get_initial_key(self):
+        items = (
+            (&#34;aaabbc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
+            (&#34;aabbcc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
+            (&#34;abbccc&#34;, &#34;cbadefghijklmnopqrstuvwxyz&#34;),
+            (ascii_lowercase, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
+            (&#34;oegefotneeahtvawwlgtnecahtwe&#34;, &#34;etawognhfvlcbdijkmpqrsuxyz&#34;),
+        )
+
+        for ciphertext, expected_initial_key in items:
+            s = SimpleSolver(ciphertext)
+            self.assertEqual(s._get_initial_key(ciphertext), expected_initial_key)
+
+    def test_get_plaintext(self):
+        items = (
+            (
+                &#34;qemeiqtxeeuktyuggjmtxesuktge&#34;,  # Ciphertext
+                &#34;etujdikzxgqswbmcfyhanpvlor&#34;,  # Common decryption key
+                &#34;defendtheeastwallofthecastle&#34;,  # Plaintext
+            ),
+            (
+                &#34;uaqaxuryaaljrklvvpqryadljrva&#34;,
+                &#34;arlpsxjcyvudgoqfekiwmntzbh&#34;,
+                &#34;defendtheeastwallofthecastle&#34;,
+            ),
+            (
+                &#34;dzyzedrjzzturbtsslyrjzntursz&#34;,
+                &#34;zrtlxeuqjsdnkpymgbhiacfwov&#34;,
+                &#34;defendtheeastwallofthecastle&#34;,
+            ),
+        )
+
+        for ciphertext, common_key, expected_plaintext in items:
+            s = SimpleSolver(ciphertext)
+            self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
+
+    def test_swap(self):
+        s = SimpleSolver(&#34;foo&#34;)
+
+        # fmt: off
+        items = (
+            (np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9],
+            ]), np.array([
+                [5, 4, 6],
+                [2, 1, 3],
+                [8, 7, 9],
+            ]), 0, 1),
+            (np.array([
+                [1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12],
+                [13, 14, 15, 16],
+            ]), np.array([
+                [1, 4, 3, 2],
+                [13, 16, 15, 14],
+                [9, 12, 11, 10],
+                [5, 8, 7, 6],
+            ]), 1, 3),
+        )
+        # fmt: on
+
+        for matrix, swapped, index1, index2 in items:
+            s._swap(matrix, index1, index2)
+            self.assertTrue(np.array_equal(matrix, swapped))
+
+        # fmt: off
+        items = (
+            np.array([
+                [1, 2],
+                [4, 5],
+                [7, 8],
+            ]),
+            np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+            ])
+        )
+        # fmt: on
+
+        for matrix in items:
+            with self.assertRaises(ValueError):
+                s._swap(matrix, 0, 2)
+
+    def test_get_digram_matrix(self):
+        s = SimpleSolver(&#34;foo&#34;)
+
+        text = &#34;abababaccz&#34;
+
+        digram_frequencies = s._get_digram_matrix(text)
+
+        # fmt: off
+        expected_frequencies = np.array([
+            [0, 30, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        ])
+        # fmt: on
+
+        rows, columns = digram_frequencies.shape
+        for i in range(rows):
+            for j in range(columns):
+                self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
+
+    def test_score(self):
+        s = SimpleSolver(&#34;foo&#34;)
+
+        # If the score matrix is identical to English we have a &#34;perfect&#34; zero score.
+        self.assertEqual(s._score(DIGRAM_MATRIX_ENGLISH, DIGRAM_MATRIX_ENGLISH), 0.0)
+
+        # Scoring a zero matrix is the equivalent of scoring the English matrix.
+        zero_array = np.zeros((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
+        self.assertEqual(s._score(zero_array), DIGRAM_MATRIX_ENGLISH.sum())
+
+        one_array = np.ones((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
+        self.assertTrue(abs(602.13 - s._score(one_array)) &lt; 0.1)
+
+        # fmt: off
+        m1 = np.array([
+            [1, 2],
+            [3, 4],
+        ])
+        m2 = np.array([
+            [2, 3],
+            [4, 5],
+        ])
+        # fmt: on
+        self.assertEqual(s._score(m1, m2), 4)
+
+    def test_get_common_letters(self):
+        s = SimpleSolver(&#34;foo&#34;)
+
+        items = (
+            (&#34;aaabbc&#34;, &#34;abc&#34;),
+            (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
+            (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
+        )
+
+        for ciphertext, common_letters in items:
+            self.assertEqual(common_letters, s._get_common_letters(ciphertext))</code></pre>
 </details>
 </section>
 <section>
@@ -78,12 +273,465 @@ not have a method with the specified name.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class SimpleSolverTestCase(unittest.TestCase):
-    pass</code></pre>
+    def test_constants(self):
+        self.assertTrue(100 - DIGRAM_MATRIX_ENGLISH.sum() &lt; 0.01)
+        self.assertTrue(1 - sum(ENGLISH_LETTER_FREQUENCIES.values()) &lt; 0.001)
+        self.assertEqual(len(ENGLISH_LETTER_FREQUENCIES), STANDARD_ALPHABET_SIZE)
+        self.assertEqual(len(ENGLISH_LETTERS_BY_FREQUENCY), STANDARD_ALPHABET_SIZE)
+
+    def test_utils(self):
+        items = (
+            (ENGLISH_LETTERS_BY_FREQUENCY, ascii_lowercase),
+            (&#34;ocewzklnsxbfaqvthrdupmgijy&#34;, &#34;eufbovhszimxqkwtjnlcaprgdy&#34;),
+        )
+
+        # Test conversion from common to alphabetical key.
+        for common_key, alpha_key in items:
+            self.assertEqual(alpha_key, common_to_alphabetical_key(common_key))
+
+        # Test conversion from alphabetical key to common key.
+        for common_key, alpha_key in items:
+            self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
+
+    def test_get_initial_key(self):
+        items = (
+            (&#34;aaabbc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
+            (&#34;aabbcc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
+            (&#34;abbccc&#34;, &#34;cbadefghijklmnopqrstuvwxyz&#34;),
+            (ascii_lowercase, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
+            (&#34;oegefotneeahtvawwlgtnecahtwe&#34;, &#34;etawognhfvlcbdijkmpqrsuxyz&#34;),
+        )
+
+        for ciphertext, expected_initial_key in items:
+            s = SimpleSolver(ciphertext)
+            self.assertEqual(s._get_initial_key(ciphertext), expected_initial_key)
+
+    def test_get_plaintext(self):
+        items = (
+            (
+                &#34;qemeiqtxeeuktyuggjmtxesuktge&#34;,  # Ciphertext
+                &#34;etujdikzxgqswbmcfyhanpvlor&#34;,  # Common decryption key
+                &#34;defendtheeastwallofthecastle&#34;,  # Plaintext
+            ),
+            (
+                &#34;uaqaxuryaaljrklvvpqryadljrva&#34;,
+                &#34;arlpsxjcyvudgoqfekiwmntzbh&#34;,
+                &#34;defendtheeastwallofthecastle&#34;,
+            ),
+            (
+                &#34;dzyzedrjzzturbtsslyrjzntursz&#34;,
+                &#34;zrtlxeuqjsdnkpymgbhiacfwov&#34;,
+                &#34;defendtheeastwallofthecastle&#34;,
+            ),
+        )
+
+        for ciphertext, common_key, expected_plaintext in items:
+            s = SimpleSolver(ciphertext)
+            self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
+
+    def test_swap(self):
+        s = SimpleSolver(&#34;foo&#34;)
+
+        # fmt: off
+        items = (
+            (np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9],
+            ]), np.array([
+                [5, 4, 6],
+                [2, 1, 3],
+                [8, 7, 9],
+            ]), 0, 1),
+            (np.array([
+                [1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12],
+                [13, 14, 15, 16],
+            ]), np.array([
+                [1, 4, 3, 2],
+                [13, 16, 15, 14],
+                [9, 12, 11, 10],
+                [5, 8, 7, 6],
+            ]), 1, 3),
+        )
+        # fmt: on
+
+        for matrix, swapped, index1, index2 in items:
+            s._swap(matrix, index1, index2)
+            self.assertTrue(np.array_equal(matrix, swapped))
+
+        # fmt: off
+        items = (
+            np.array([
+                [1, 2],
+                [4, 5],
+                [7, 8],
+            ]),
+            np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+            ])
+        )
+        # fmt: on
+
+        for matrix in items:
+            with self.assertRaises(ValueError):
+                s._swap(matrix, 0, 2)
+
+    def test_get_digram_matrix(self):
+        s = SimpleSolver(&#34;foo&#34;)
+
+        text = &#34;abababaccz&#34;
+
+        digram_frequencies = s._get_digram_matrix(text)
+
+        # fmt: off
+        expected_frequencies = np.array([
+            [0, 30, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        ])
+        # fmt: on
+
+        rows, columns = digram_frequencies.shape
+        for i in range(rows):
+            for j in range(columns):
+                self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
+
+    def test_score(self):
+        s = SimpleSolver(&#34;foo&#34;)
+
+        # If the score matrix is identical to English we have a &#34;perfect&#34; zero score.
+        self.assertEqual(s._score(DIGRAM_MATRIX_ENGLISH, DIGRAM_MATRIX_ENGLISH), 0.0)
+
+        # Scoring a zero matrix is the equivalent of scoring the English matrix.
+        zero_array = np.zeros((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
+        self.assertEqual(s._score(zero_array), DIGRAM_MATRIX_ENGLISH.sum())
+
+        one_array = np.ones((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
+        self.assertTrue(abs(602.13 - s._score(one_array)) &lt; 0.1)
+
+        # fmt: off
+        m1 = np.array([
+            [1, 2],
+            [3, 4],
+        ])
+        m2 = np.array([
+            [2, 3],
+            [4, 5],
+        ])
+        # fmt: on
+        self.assertEqual(s._score(m1, m2), 4)
+
+    def test_get_common_letters(self):
+        s = SimpleSolver(&#34;foo&#34;)
+
+        items = (
+            (&#34;aaabbc&#34;, &#34;abc&#34;),
+            (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
+            (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
+        )
+
+        for ciphertext, common_letters in items:
+            self.assertEqual(common_letters, s._get_common_letters(ciphertext))</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>unittest.case.TestCase</li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_constants"><code class="name flex">
+<span>def <span class="ident">test_constants</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_constants(self):
+    self.assertTrue(100 - DIGRAM_MATRIX_ENGLISH.sum() &lt; 0.01)
+    self.assertTrue(1 - sum(ENGLISH_LETTER_FREQUENCIES.values()) &lt; 0.001)
+    self.assertEqual(len(ENGLISH_LETTER_FREQUENCIES), STANDARD_ALPHABET_SIZE)
+    self.assertEqual(len(ENGLISH_LETTERS_BY_FREQUENCY), STANDARD_ALPHABET_SIZE)</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_utils"><code class="name flex">
+<span>def <span class="ident">test_utils</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_utils(self):
+    items = (
+        (ENGLISH_LETTERS_BY_FREQUENCY, ascii_lowercase),
+        (&#34;ocewzklnsxbfaqvthrdupmgijy&#34;, &#34;eufbovhszimxqkwtjnlcaprgdy&#34;),
+    )
+
+    # Test conversion from common to alphabetical key.
+    for common_key, alpha_key in items:
+        self.assertEqual(alpha_key, common_to_alphabetical_key(common_key))
+
+    # Test conversion from alphabetical key to common key.
+    for common_key, alpha_key in items:
+        self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_initial_key"><code class="name flex">
+<span>def <span class="ident">test_get_initial_key</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_initial_key(self):
+    items = (
+        (&#34;aaabbc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
+        (&#34;aabbcc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
+        (&#34;abbccc&#34;, &#34;cbadefghijklmnopqrstuvwxyz&#34;),
+        (ascii_lowercase, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
+        (&#34;oegefotneeahtvawwlgtnecahtwe&#34;, &#34;etawognhfvlcbdijkmpqrsuxyz&#34;),
+    )
+
+    for ciphertext, expected_initial_key in items:
+        s = SimpleSolver(ciphertext)
+        self.assertEqual(s._get_initial_key(ciphertext), expected_initial_key)</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext"><code class="name flex">
+<span>def <span class="ident">test_get_plaintext</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_plaintext(self):
+    items = (
+        (
+            &#34;qemeiqtxeeuktyuggjmtxesuktge&#34;,  # Ciphertext
+            &#34;etujdikzxgqswbmcfyhanpvlor&#34;,  # Common decryption key
+            &#34;defendtheeastwallofthecastle&#34;,  # Plaintext
+        ),
+        (
+            &#34;uaqaxuryaaljrklvvpqryadljrva&#34;,
+            &#34;arlpsxjcyvudgoqfekiwmntzbh&#34;,
+            &#34;defendtheeastwallofthecastle&#34;,
+        ),
+        (
+            &#34;dzyzedrjzzturbtsslyrjzntursz&#34;,
+            &#34;zrtlxeuqjsdnkpymgbhiacfwov&#34;,
+            &#34;defendtheeastwallofthecastle&#34;,
+        ),
+    )
+
+    for ciphertext, common_key, expected_plaintext in items:
+        s = SimpleSolver(ciphertext)
+        self.assertEqual(s._get_plaintext(common_key), expected_plaintext)</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_swap"><code class="name flex">
+<span>def <span class="ident">test_swap</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_swap(self):
+    s = SimpleSolver(&#34;foo&#34;)
+
+    # fmt: off
+    items = (
+        (np.array([
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+        ]), np.array([
+            [5, 4, 6],
+            [2, 1, 3],
+            [8, 7, 9],
+        ]), 0, 1),
+        (np.array([
+            [1, 2, 3, 4],
+            [5, 6, 7, 8],
+            [9, 10, 11, 12],
+            [13, 14, 15, 16],
+        ]), np.array([
+            [1, 4, 3, 2],
+            [13, 16, 15, 14],
+            [9, 12, 11, 10],
+            [5, 8, 7, 6],
+        ]), 1, 3),
+    )
+    # fmt: on
+
+    for matrix, swapped, index1, index2 in items:
+        s._swap(matrix, index1, index2)
+        self.assertTrue(np.array_equal(matrix, swapped))
+
+    # fmt: off
+    items = (
+        np.array([
+            [1, 2],
+            [4, 5],
+            [7, 8],
+        ]),
+        np.array([
+            [1, 2, 3],
+            [4, 5, 6],
+        ])
+    )
+    # fmt: on
+
+    for matrix in items:
+        with self.assertRaises(ValueError):
+            s._swap(matrix, 0, 2)</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix"><code class="name flex">
+<span>def <span class="ident">test_get_digram_matrix</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_digram_matrix(self):
+    s = SimpleSolver(&#34;foo&#34;)
+
+    text = &#34;abababaccz&#34;
+
+    digram_frequencies = s._get_digram_matrix(text)
+
+    # fmt: off
+    expected_frequencies = np.array([
+        [0, 30, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+    ])
+    # fmt: on
+
+    rows, columns = digram_frequencies.shape
+    for i in range(rows):
+        for j in range(columns):
+            self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_score"><code class="name flex">
+<span>def <span class="ident">test_score</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_score(self):
+    s = SimpleSolver(&#34;foo&#34;)
+
+    # If the score matrix is identical to English we have a &#34;perfect&#34; zero score.
+    self.assertEqual(s._score(DIGRAM_MATRIX_ENGLISH, DIGRAM_MATRIX_ENGLISH), 0.0)
+
+    # Scoring a zero matrix is the equivalent of scoring the English matrix.
+    zero_array = np.zeros((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
+    self.assertEqual(s._score(zero_array), DIGRAM_MATRIX_ENGLISH.sum())
+
+    one_array = np.ones((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
+    self.assertTrue(abs(602.13 - s._score(one_array)) &lt; 0.1)
+
+    # fmt: off
+    m1 = np.array([
+        [1, 2],
+        [3, 4],
+    ])
+    m2 = np.array([
+        [2, 3],
+        [4, 5],
+    ])
+    # fmt: on
+    self.assertEqual(s._score(m1, m2), 4)</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters"><code class="name flex">
+<span>def <span class="ident">test_get_common_letters</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_common_letters(self):
+    s = SimpleSolver(&#34;foo&#34;)
+
+    items = (
+        (&#34;aaabbc&#34;, &#34;abc&#34;),
+        (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
+        (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
+    )
+
+    for ciphertext, common_letters in items:
+        self.assertEqual(common_letters, s._get_common_letters(ciphertext))</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -103,6 +751,16 @@ not have a method with the specified name.</p></div>
 <ul>
 <li>
 <h4><code><a title="markmag-ovn7.tests.SimpleSolverTestCase" href="#markmag-ovn7.tests.SimpleSolverTestCase">SimpleSolverTestCase</a></code></h4>
+<ul class="">
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_constants" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_constants">test_constants</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_utils" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_utils">test_utils</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_initial_key" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_initial_key">test_get_initial_key</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext">test_get_plaintext</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_swap" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_swap">test_swap</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix">test_get_digram_matrix</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_score" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_score">test_score</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters">test_get_common_letters</a></code></li>
+</ul>
 </li>
 </ul>
 </li>
