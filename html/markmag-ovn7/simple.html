@@ -91,34 +91,44 @@ class SimpleSolver:
 
         self._ciphertext = ciphertext.lower()
 
-    def _score(self, matrix1, matrix2=DIGRAM_MATRIX_ENGLISH):
-        &#34;&#34;&#34;Calculate a score for passed digram matrices using the distance sum method.
+    def _get_initial_key(self, ciphertext):
+        &#34;&#34;&#34;Construct the initial decryption key.
 
-        The score is defined as the sum of all the absolute differences between each
-        corresponding element in the two matrices.
+        The initial decryption key is based on the letter frequencies in the ciphertext,
+        meaning an assumption that the most common letter in the ciphertext translates
+        to the most common letter in the English language, and so on. Any letters not
+        present in the ciphertext will be added alphabetically at the end of the key.
 
         Parameters
         ----------
-        matrix1 : numpy.array
-            The first matrix to use in the comparison.
-        matrix2 : numpy.array
-            The second matrix to use in the comparison. Defaults to English digrams.
+        ciphertext : str
+            The ciphertext to generate an initial decryption key from.
 
         Returns
         -------
-        score : float
-            The distance sum of the two matrices.
+        decryption_key : str
+            The initial decryption key.
 
         Raises
         ------
         ValueError
-            If the passed matrices don&#39;t have the same number of rows and columns.
+            If the passed ciphertext is not a string.
+            If the passed ciphertext is empty.
         &#34;&#34;&#34;
 
-        if matrix1.shape != matrix2.shape:
-            raise ValueError(&#34;Digram matrices must have the same dimensions&#34;)
+        if not isinstance(ciphertext, str):
+            raise ValueError(f&#34;{ciphertext} is not a string.&#34;)
 
-        return abs(matrix1 - matrix2).sum()
+        if len(ciphertext) &lt; 1:
+            raise ValueError(&#34;Ciphertext cannot be empty.&#34;)
+
+        decryption_key = self._get_common_letters(ciphertext)
+
+        for c in ascii_lowercase:
+            if c not in decryption_key:
+                decryption_key += c
+
+        return &#34;&#34;.join(decryption_key)
 
     def _get_common_letters(self, text):
         &#34;&#34;&#34;Get all unique letters of the passed text, sorted by frequency.
@@ -146,7 +156,9 @@ class SimpleSolver:
             raise ValueError(&#34;Text must not be empty.&#34;)
 
         c = Counter(text)
-        return &#34;&#34;.join([letter[0] for letter in c.most_common()])
+        return &#34;&#34;.join(
+            [letter[0] for letter in c.most_common() if letter[0] in ascii_lowercase]
+        )
 
     def _get_digram_matrix(self, text, alphabet_size=STANDARD_ALPHABET_SIZE):
         &#34;&#34;&#34;Generate digram matrix for the passed text.
@@ -188,8 +200,12 @@ class SimpleSolver:
         # First, count the number of occurrences of each letter and save to the index
         # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for &#34;aa&#34; etc.
         for i in range(0, text_length - 1):
-            a = ascii_lowercase.index(text[i])
-            b = ascii_lowercase.index(text[i + 1])
+            char1 = text[i]
+            char2 = text[i + 1]
+            if char1 not in ascii_lowercase or char2 not in ascii_lowercase:
+                continue
+            a = ascii_lowercase.index(char1)
+            b = ascii_lowercase.index(char2)
             digram_matrix[a, b] += 1
 
         # Replace each entry with a percentage of the total text length, to get the same
@@ -201,6 +217,64 @@ class SimpleSolver:
                 digram_matrix[i, j] = 100 * digram_matrix[i, j] / text_length
 
         return digram_matrix
+
+    def _score(self, matrix1, matrix2=DIGRAM_MATRIX_ENGLISH):
+        &#34;&#34;&#34;Calculate a score for passed digram matrices using the distance sum method.
+
+        The score is defined as the sum of all the absolute differences between each
+        corresponding element in the two matrices.
+
+        Parameters
+        ----------
+        matrix1 : numpy.array
+            The first matrix to use in the comparison.
+        matrix2 : numpy.array
+            The second matrix to use in the comparison. Defaults to English digrams.
+
+        Returns
+        -------
+        score : float
+            The distance sum of the two matrices.
+
+        Raises
+        ------
+        ValueError
+            If the passed matrices don&#39;t have the same number of rows and columns.
+        &#34;&#34;&#34;
+
+        if matrix1.shape != matrix2.shape:
+            raise ValueError(&#34;Digram matrices must have the same dimensions&#34;)
+
+        return abs(matrix1 - matrix2).sum()
+
+    def _swap(self, matrix, index1, index2):
+        &#34;&#34;&#34;Swap the matrix rows and columns at the given indices.
+
+        Parameters
+        ----------
+        matrix : numpy.array
+            The matrix to modify in-place.
+        index1 : int
+            The first index to swap between.
+        index2 : int
+            The second index to swap between.
+
+        Raises
+        ------
+        ValueError
+            If the passed matrix is not square.
+        &#34;&#34;&#34;
+
+        rows, columns = matrix.shape
+
+        if rows != columns:
+            raise ValueError(&#34;Matrix must be square.&#34;)
+
+        # Swap rows:
+        matrix[[index1, index2]] = matrix[[index2, index1]]
+
+        # Swap columns:
+        matrix[:, [index1, index2]] = matrix[:, [index2, index1]]
 
     def _get_plaintext(self, decryption_key):
         &#34;&#34;&#34;Return a plaintext using the passed decryption key.
@@ -237,75 +311,7 @@ class SimpleSolver:
             plain_letter = ascii_lowercase[index]
             translation_table[key_letter] = plain_letter
 
-        return &#34;&#34;.join([translation_table[c] for c in self._ciphertext])
-
-    def _get_initial_key(self, ciphertext):
-        &#34;&#34;&#34;Construct the initial decryption key.
-
-        The initial decryption key is based on the letter frequencies in the ciphertext,
-        meaning an assumption that the most common letter in the ciphertext translates
-        to the most common letter in the English language, and so on. Any letters not
-        present in the ciphertext will be added alphabetically at the end of the key.
-
-        Parameters
-        ----------
-        ciphertext : str
-            The ciphertext to generate an initial decryption key from.
-
-        Returns
-        -------
-        decryption_key : str
-            The initial decryption key.
-
-        Raises
-        ------
-        ValueError
-            If the passed ciphertext is not a string.
-            If the passed ciphertext is empty.
-        &#34;&#34;&#34;
-
-        if not isinstance(ciphertext, str):
-            raise ValueError(f&#34;{ciphertext} is not a string.&#34;)
-
-        if len(ciphertext) &lt; 1:
-            raise ValueError(&#34;Ciphertext cannot be empty.&#34;)
-
-        decryption_key = self._get_common_letters(ciphertext)
-
-        for c in ascii_lowercase:
-            if c not in decryption_key:
-                decryption_key += c
-
-        return &#34;&#34;.join(decryption_key)
-
-    def _swap(self, matrix, index1, index2):
-        &#34;&#34;&#34;Swap the matrix rows and columns at the given indices.
-
-        Parameters
-        ----------
-        matrix : numpy.array
-            The matrix to modify in-place.
-        index1 : int
-            The first index to swap between.
-        index2 : int
-            The second index to swap between.
-
-        Raises
-        ------
-        ValueError
-            If the passed matrix is not square.
-        &#34;&#34;&#34;
-
-        rows, columns = matrix.shape
-
-        if rows != columns:
-            raise ValueError(&#34;Matrix must be square.&#34;)
-
-        # Swap rows:
-        matrix[[index1, index2]] = matrix[[index2, index1]]
-
-        # Swap columns:
-        matrix[:, [index1, index2]] = matrix[:, [index2, index1]]
+        return &#34;&#34;.join([translation_table.get(c, c) for c in self._ciphertext])
 
     def _solve_naive(self):
         &#34;&#34;&#34;Solve cipher using the naive algorithm based on random key swaps.
@@ -546,34 +552,44 @@ If the passed ciphertext is empty.</dd>
 
         self._ciphertext = ciphertext.lower()
 
-    def _score(self, matrix1, matrix2=DIGRAM_MATRIX_ENGLISH):
-        &#34;&#34;&#34;Calculate a score for passed digram matrices using the distance sum method.
+    def _get_initial_key(self, ciphertext):
+        &#34;&#34;&#34;Construct the initial decryption key.
 
-        The score is defined as the sum of all the absolute differences between each
-        corresponding element in the two matrices.
+        The initial decryption key is based on the letter frequencies in the ciphertext,
+        meaning an assumption that the most common letter in the ciphertext translates
+        to the most common letter in the English language, and so on. Any letters not
+        present in the ciphertext will be added alphabetically at the end of the key.
 
         Parameters
         ----------
-        matrix1 : numpy.array
-            The first matrix to use in the comparison.
-        matrix2 : numpy.array
-            The second matrix to use in the comparison. Defaults to English digrams.
+        ciphertext : str
+            The ciphertext to generate an initial decryption key from.
 
         Returns
         -------
-        score : float
-            The distance sum of the two matrices.
+        decryption_key : str
+            The initial decryption key.
 
         Raises
         ------
         ValueError
-            If the passed matrices don&#39;t have the same number of rows and columns.
+            If the passed ciphertext is not a string.
+            If the passed ciphertext is empty.
         &#34;&#34;&#34;
 
-        if matrix1.shape != matrix2.shape:
-            raise ValueError(&#34;Digram matrices must have the same dimensions&#34;)
+        if not isinstance(ciphertext, str):
+            raise ValueError(f&#34;{ciphertext} is not a string.&#34;)
 
-        return abs(matrix1 - matrix2).sum()
+        if len(ciphertext) &lt; 1:
+            raise ValueError(&#34;Ciphertext cannot be empty.&#34;)
+
+        decryption_key = self._get_common_letters(ciphertext)
+
+        for c in ascii_lowercase:
+            if c not in decryption_key:
+                decryption_key += c
+
+        return &#34;&#34;.join(decryption_key)
 
     def _get_common_letters(self, text):
         &#34;&#34;&#34;Get all unique letters of the passed text, sorted by frequency.
@@ -601,7 +617,9 @@ If the passed ciphertext is empty.</dd>
             raise ValueError(&#34;Text must not be empty.&#34;)
 
         c = Counter(text)
-        return &#34;&#34;.join([letter[0] for letter in c.most_common()])
+        return &#34;&#34;.join(
+            [letter[0] for letter in c.most_common() if letter[0] in ascii_lowercase]
+        )
 
     def _get_digram_matrix(self, text, alphabet_size=STANDARD_ALPHABET_SIZE):
         &#34;&#34;&#34;Generate digram matrix for the passed text.
@@ -643,8 +661,12 @@ If the passed ciphertext is empty.</dd>
         # First, count the number of occurrences of each letter and save to the index
         # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for &#34;aa&#34; etc.
         for i in range(0, text_length - 1):
-            a = ascii_lowercase.index(text[i])
-            b = ascii_lowercase.index(text[i + 1])
+            char1 = text[i]
+            char2 = text[i + 1]
+            if char1 not in ascii_lowercase or char2 not in ascii_lowercase:
+                continue
+            a = ascii_lowercase.index(char1)
+            b = ascii_lowercase.index(char2)
             digram_matrix[a, b] += 1
 
         # Replace each entry with a percentage of the total text length, to get the same
@@ -656,6 +678,64 @@ If the passed ciphertext is empty.</dd>
                 digram_matrix[i, j] = 100 * digram_matrix[i, j] / text_length
 
         return digram_matrix
+
+    def _score(self, matrix1, matrix2=DIGRAM_MATRIX_ENGLISH):
+        &#34;&#34;&#34;Calculate a score for passed digram matrices using the distance sum method.
+
+        The score is defined as the sum of all the absolute differences between each
+        corresponding element in the two matrices.
+
+        Parameters
+        ----------
+        matrix1 : numpy.array
+            The first matrix to use in the comparison.
+        matrix2 : numpy.array
+            The second matrix to use in the comparison. Defaults to English digrams.
+
+        Returns
+        -------
+        score : float
+            The distance sum of the two matrices.
+
+        Raises
+        ------
+        ValueError
+            If the passed matrices don&#39;t have the same number of rows and columns.
+        &#34;&#34;&#34;
+
+        if matrix1.shape != matrix2.shape:
+            raise ValueError(&#34;Digram matrices must have the same dimensions&#34;)
+
+        return abs(matrix1 - matrix2).sum()
+
+    def _swap(self, matrix, index1, index2):
+        &#34;&#34;&#34;Swap the matrix rows and columns at the given indices.
+
+        Parameters
+        ----------
+        matrix : numpy.array
+            The matrix to modify in-place.
+        index1 : int
+            The first index to swap between.
+        index2 : int
+            The second index to swap between.
+
+        Raises
+        ------
+        ValueError
+            If the passed matrix is not square.
+        &#34;&#34;&#34;
+
+        rows, columns = matrix.shape
+
+        if rows != columns:
+            raise ValueError(&#34;Matrix must be square.&#34;)
+
+        # Swap rows:
+        matrix[[index1, index2]] = matrix[[index2, index1]]
+
+        # Swap columns:
+        matrix[:, [index1, index2]] = matrix[:, [index2, index1]]
 
     def _get_plaintext(self, decryption_key):
         &#34;&#34;&#34;Return a plaintext using the passed decryption key.
@@ -692,75 +772,7 @@ If the passed ciphertext is empty.</dd>
             plain_letter = ascii_lowercase[index]
             translation_table[key_letter] = plain_letter
 
-        return &#34;&#34;.join([translation_table[c] for c in self._ciphertext])
-
-    def _get_initial_key(self, ciphertext):
-        &#34;&#34;&#34;Construct the initial decryption key.
-
-        The initial decryption key is based on the letter frequencies in the ciphertext,
-        meaning an assumption that the most common letter in the ciphertext translates
-        to the most common letter in the English language, and so on. Any letters not
-        present in the ciphertext will be added alphabetically at the end of the key.
-
-        Parameters
-        ----------
-        ciphertext : str
-            The ciphertext to generate an initial decryption key from.
-
-        Returns
-        -------
-        decryption_key : str
-            The initial decryption key.
-
-        Raises
-        ------
-        ValueError
-            If the passed ciphertext is not a string.
-            If the passed ciphertext is empty.
-        &#34;&#34;&#34;
-
-        if not isinstance(ciphertext, str):
-            raise ValueError(f&#34;{ciphertext} is not a string.&#34;)
-
-        if len(ciphertext) &lt; 1:
-            raise ValueError(&#34;Ciphertext cannot be empty.&#34;)
-
-        decryption_key = self._get_common_letters(ciphertext)
-
-        for c in ascii_lowercase:
-            if c not in decryption_key:
-                decryption_key += c
-
-        return &#34;&#34;.join(decryption_key)
-
-    def _swap(self, matrix, index1, index2):
-        &#34;&#34;&#34;Swap the matrix rows and columns at the given indices.
-
-        Parameters
-        ----------
-        matrix : numpy.array
-            The matrix to modify in-place.
-        index1 : int
-            The first index to swap between.
-        index2 : int
-            The second index to swap between.
-
-        Raises
-        ------
-        ValueError
-            If the passed matrix is not square.
-        &#34;&#34;&#34;
-
-        rows, columns = matrix.shape
-
-        if rows != columns:
-            raise ValueError(&#34;Matrix must be square.&#34;)
-
-        # Swap rows:
-        matrix[[index1, index2]] = matrix[[index2, index1]]
-
-        # Swap columns:
-        matrix[:, [index1, index2]] = matrix[:, [index2, index1]]
+        return &#34;&#34;.join([translation_table.get(c, c) for c in self._ciphertext])
 
     def _solve_naive(self):
         &#34;&#34;&#34;Solve cipher using the naive algorithm based on random key swaps.

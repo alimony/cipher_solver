@@ -59,6 +59,9 @@ class SimpleSolverTestCase(unittest.TestCase):
         for common_key, alpha_key in items:
             self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
 
+    def test_init(self):
+        pass
+
     def test_get_initial_key(self):
         items = (
             (&#34;aaabbc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
@@ -72,78 +75,17 @@ class SimpleSolverTestCase(unittest.TestCase):
             s = SimpleSolver(ciphertext)
             self.assertEqual(s._get_initial_key(ciphertext), expected_initial_key)
 
-    def test_get_plaintext(self):
-        items = (
-            (
-                &#34;qemeiqtxeeuktyuggjmtxesuktge&#34;,  # Ciphertext
-                &#34;etujdikzxgqswbmcfyhanpvlor&#34;,  # Common decryption key
-                &#34;defendtheeastwallofthecastle&#34;,  # Plaintext
-            ),
-            (
-                &#34;uaqaxuryaaljrklvvpqryadljrva&#34;,
-                &#34;arlpsxjcyvudgoqfekiwmntzbh&#34;,
-                &#34;defendtheeastwallofthecastle&#34;,
-            ),
-            (
-                &#34;dzyzedrjzzturbtsslyrjzntursz&#34;,
-                &#34;zrtlxeuqjsdnkpymgbhiacfwov&#34;,
-                &#34;defendtheeastwallofthecastle&#34;,
-            ),
-        )
-
-        for ciphertext, common_key, expected_plaintext in items:
-            s = SimpleSolver(ciphertext)
-            self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
-
-    def test_swap(self):
+    def test_get_common_letters(self):
         s = SimpleSolver(&#34;foo&#34;)
 
-        # fmt: off
         items = (
-            (np.array([
-                [1, 2, 3],
-                [4, 5, 6],
-                [7, 8, 9],
-            ]), np.array([
-                [5, 4, 6],
-                [2, 1, 3],
-                [8, 7, 9],
-            ]), 0, 1),
-            (np.array([
-                [1, 2, 3, 4],
-                [5, 6, 7, 8],
-                [9, 10, 11, 12],
-                [13, 14, 15, 16],
-            ]), np.array([
-                [1, 4, 3, 2],
-                [13, 16, 15, 14],
-                [9, 12, 11, 10],
-                [5, 8, 7, 6],
-            ]), 1, 3),
+            (&#34;aaabbc&#34;, &#34;abc&#34;),
+            (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
+            (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
         )
-        # fmt: on
 
-        for matrix, swapped, index1, index2 in items:
-            s._swap(matrix, index1, index2)
-            self.assertTrue(np.array_equal(matrix, swapped))
-
-        # fmt: off
-        items = (
-            np.array([
-                [1, 2],
-                [4, 5],
-                [7, 8],
-            ]),
-            np.array([
-                [1, 2, 3],
-                [4, 5, 6],
-            ])
-        )
-        # fmt: on
-
-        for matrix in items:
-            with self.assertRaises(ValueError):
-                s._swap(matrix, 0, 2)
+        for ciphertext, common_letters in items:
+            self.assertEqual(common_letters, s._get_common_letters(ciphertext))
 
     def test_get_digram_matrix(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -213,17 +155,81 @@ class SimpleSolverTestCase(unittest.TestCase):
         # fmt: on
         self.assertEqual(s._score(m1, m2), 4)
 
-    def test_get_common_letters(self):
+    def test_swap(self):
         s = SimpleSolver(&#34;foo&#34;)
 
+        # fmt: off
         items = (
-            (&#34;aaabbc&#34;, &#34;abc&#34;),
-            (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
-            (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
+            (np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9],
+            ]), np.array([
+                [5, 4, 6],
+                [2, 1, 3],
+                [8, 7, 9],
+            ]), 0, 1),
+            (np.array([
+                [1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12],
+                [13, 14, 15, 16],
+            ]), np.array([
+                [1, 4, 3, 2],
+                [13, 16, 15, 14],
+                [9, 12, 11, 10],
+                [5, 8, 7, 6],
+            ]), 1, 3),
+        )
+        # fmt: on
+
+        for matrix, swapped, index1, index2 in items:
+            s._swap(matrix, index1, index2)
+            self.assertTrue(np.array_equal(matrix, swapped))
+
+        # fmt: off
+        items = (
+            np.array([
+                [1, 2],
+                [4, 5],
+                [7, 8],
+            ]),
+            np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+            ])
+        )
+        # fmt: on
+
+        for matrix in items:
+            with self.assertRaises(ValueError):
+                s._swap(matrix, 0, 2)
+
+    def test_get_plaintext(self):
+        items = (
+            (
+                &#34;qemeiqtxeeuktyuggjmtxesuktge&#34;,  # Ciphertext
+                &#34;etujdikzxgqswbmcfyhanpvlor&#34;,  # Common decryption key
+                &#34;defendtheeastwallofthecastle&#34;,  # Plaintext
+            ),
+            (
+                &#34;uaqaxuryaaljrklvvpqryadljrva&#34;,
+                &#34;arlpsxjcyvudgoqfekiwmntzbh&#34;,
+                &#34;defendtheeastwallofthecastle&#34;,
+            ),
+            (
+                &#34;dzyzedrjzzturbtsslyrjzntursz&#34;,
+                &#34;zrtlxeuqjsdnkpymgbhiacfwov&#34;,
+                &#34;defendtheeastwallofthecastle&#34;,
+            ),
         )
 
-        for ciphertext, common_letters in items:
-            self.assertEqual(common_letters, s._get_common_letters(ciphertext))</code></pre>
+        for ciphertext, common_key, expected_plaintext in items:
+            s = SimpleSolver(ciphertext)
+            self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
+
+    def test_public_api(self):
+        pass</code></pre>
 </details>
 </section>
 <section>
@@ -293,6 +299,9 @@ not have a method with the specified name.</p></div>
         for common_key, alpha_key in items:
             self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
 
+    def test_init(self):
+        pass
+
     def test_get_initial_key(self):
         items = (
             (&#34;aaabbc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
@@ -306,78 +315,17 @@ not have a method with the specified name.</p></div>
             s = SimpleSolver(ciphertext)
             self.assertEqual(s._get_initial_key(ciphertext), expected_initial_key)
 
-    def test_get_plaintext(self):
-        items = (
-            (
-                &#34;qemeiqtxeeuktyuggjmtxesuktge&#34;,  # Ciphertext
-                &#34;etujdikzxgqswbmcfyhanpvlor&#34;,  # Common decryption key
-                &#34;defendtheeastwallofthecastle&#34;,  # Plaintext
-            ),
-            (
-                &#34;uaqaxuryaaljrklvvpqryadljrva&#34;,
-                &#34;arlpsxjcyvudgoqfekiwmntzbh&#34;,
-                &#34;defendtheeastwallofthecastle&#34;,
-            ),
-            (
-                &#34;dzyzedrjzzturbtsslyrjzntursz&#34;,
-                &#34;zrtlxeuqjsdnkpymgbhiacfwov&#34;,
-                &#34;defendtheeastwallofthecastle&#34;,
-            ),
-        )
-
-        for ciphertext, common_key, expected_plaintext in items:
-            s = SimpleSolver(ciphertext)
-            self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
-
-    def test_swap(self):
+    def test_get_common_letters(self):
         s = SimpleSolver(&#34;foo&#34;)
 
-        # fmt: off
         items = (
-            (np.array([
-                [1, 2, 3],
-                [4, 5, 6],
-                [7, 8, 9],
-            ]), np.array([
-                [5, 4, 6],
-                [2, 1, 3],
-                [8, 7, 9],
-            ]), 0, 1),
-            (np.array([
-                [1, 2, 3, 4],
-                [5, 6, 7, 8],
-                [9, 10, 11, 12],
-                [13, 14, 15, 16],
-            ]), np.array([
-                [1, 4, 3, 2],
-                [13, 16, 15, 14],
-                [9, 12, 11, 10],
-                [5, 8, 7, 6],
-            ]), 1, 3),
+            (&#34;aaabbc&#34;, &#34;abc&#34;),
+            (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
+            (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
         )
-        # fmt: on
 
-        for matrix, swapped, index1, index2 in items:
-            s._swap(matrix, index1, index2)
-            self.assertTrue(np.array_equal(matrix, swapped))
-
-        # fmt: off
-        items = (
-            np.array([
-                [1, 2],
-                [4, 5],
-                [7, 8],
-            ]),
-            np.array([
-                [1, 2, 3],
-                [4, 5, 6],
-            ])
-        )
-        # fmt: on
-
-        for matrix in items:
-            with self.assertRaises(ValueError):
-                s._swap(matrix, 0, 2)
+        for ciphertext, common_letters in items:
+            self.assertEqual(common_letters, s._get_common_letters(ciphertext))
 
     def test_get_digram_matrix(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -447,17 +395,81 @@ not have a method with the specified name.</p></div>
         # fmt: on
         self.assertEqual(s._score(m1, m2), 4)
 
-    def test_get_common_letters(self):
+    def test_swap(self):
         s = SimpleSolver(&#34;foo&#34;)
 
+        # fmt: off
         items = (
-            (&#34;aaabbc&#34;, &#34;abc&#34;),
-            (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
-            (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
+            (np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9],
+            ]), np.array([
+                [5, 4, 6],
+                [2, 1, 3],
+                [8, 7, 9],
+            ]), 0, 1),
+            (np.array([
+                [1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12],
+                [13, 14, 15, 16],
+            ]), np.array([
+                [1, 4, 3, 2],
+                [13, 16, 15, 14],
+                [9, 12, 11, 10],
+                [5, 8, 7, 6],
+            ]), 1, 3),
+        )
+        # fmt: on
+
+        for matrix, swapped, index1, index2 in items:
+            s._swap(matrix, index1, index2)
+            self.assertTrue(np.array_equal(matrix, swapped))
+
+        # fmt: off
+        items = (
+            np.array([
+                [1, 2],
+                [4, 5],
+                [7, 8],
+            ]),
+            np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+            ])
+        )
+        # fmt: on
+
+        for matrix in items:
+            with self.assertRaises(ValueError):
+                s._swap(matrix, 0, 2)
+
+    def test_get_plaintext(self):
+        items = (
+            (
+                &#34;qemeiqtxeeuktyuggjmtxesuktge&#34;,  # Ciphertext
+                &#34;etujdikzxgqswbmcfyhanpvlor&#34;,  # Common decryption key
+                &#34;defendtheeastwallofthecastle&#34;,  # Plaintext
+            ),
+            (
+                &#34;uaqaxuryaaljrklvvpqryadljrva&#34;,
+                &#34;arlpsxjcyvudgoqfekiwmntzbh&#34;,
+                &#34;defendtheeastwallofthecastle&#34;,
+            ),
+            (
+                &#34;dzyzedrjzzturbtsslyrjzntursz&#34;,
+                &#34;zrtlxeuqjsdnkpymgbhiacfwov&#34;,
+                &#34;defendtheeastwallofthecastle&#34;,
+            ),
         )
 
-        for ciphertext, common_letters in items:
-            self.assertEqual(common_letters, s._get_common_letters(ciphertext))</code></pre>
+        for ciphertext, common_key, expected_plaintext in items:
+            s = SimpleSolver(ciphertext)
+            self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
+
+    def test_public_api(self):
+        pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -505,6 +517,19 @@ not have a method with the specified name.</p></div>
         self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))</code></pre>
 </details>
 </dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_init"><code class="name flex">
+<span>def <span class="ident">test_init</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_init(self):
+    pass</code></pre>
+</details>
+</dd>
 <dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_initial_key"><code class="name flex">
 <span>def <span class="ident">test_get_initial_key</span></span>(<span>self)</span>
 </code></dt>
@@ -528,8 +553,8 @@ not have a method with the specified name.</p></div>
         self.assertEqual(s._get_initial_key(ciphertext), expected_initial_key)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext"><code class="name flex">
-<span>def <span class="ident">test_get_plaintext</span></span>(<span>self)</span>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters"><code class="name flex">
+<span>def <span class="ident">test_get_common_letters</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -537,88 +562,17 @@ not have a method with the specified name.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def test_get_plaintext(self):
-    items = (
-        (
-            &#34;qemeiqtxeeuktyuggjmtxesuktge&#34;,  # Ciphertext
-            &#34;etujdikzxgqswbmcfyhanpvlor&#34;,  # Common decryption key
-            &#34;defendtheeastwallofthecastle&#34;,  # Plaintext
-        ),
-        (
-            &#34;uaqaxuryaaljrklvvpqryadljrva&#34;,
-            &#34;arlpsxjcyvudgoqfekiwmntzbh&#34;,
-            &#34;defendtheeastwallofthecastle&#34;,
-        ),
-        (
-            &#34;dzyzedrjzzturbtsslyrjzntursz&#34;,
-            &#34;zrtlxeuqjsdnkpymgbhiacfwov&#34;,
-            &#34;defendtheeastwallofthecastle&#34;,
-        ),
-    )
-
-    for ciphertext, common_key, expected_plaintext in items:
-        s = SimpleSolver(ciphertext)
-        self.assertEqual(s._get_plaintext(common_key), expected_plaintext)</code></pre>
-</details>
-</dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_swap"><code class="name flex">
-<span>def <span class="ident">test_swap</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def test_swap(self):
+<pre><code class="python">def test_get_common_letters(self):
     s = SimpleSolver(&#34;foo&#34;)
 
-    # fmt: off
     items = (
-        (np.array([
-            [1, 2, 3],
-            [4, 5, 6],
-            [7, 8, 9],
-        ]), np.array([
-            [5, 4, 6],
-            [2, 1, 3],
-            [8, 7, 9],
-        ]), 0, 1),
-        (np.array([
-            [1, 2, 3, 4],
-            [5, 6, 7, 8],
-            [9, 10, 11, 12],
-            [13, 14, 15, 16],
-        ]), np.array([
-            [1, 4, 3, 2],
-            [13, 16, 15, 14],
-            [9, 12, 11, 10],
-            [5, 8, 7, 6],
-        ]), 1, 3),
+        (&#34;aaabbc&#34;, &#34;abc&#34;),
+        (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
+        (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
     )
-    # fmt: on
 
-    for matrix, swapped, index1, index2 in items:
-        s._swap(matrix, index1, index2)
-        self.assertTrue(np.array_equal(matrix, swapped))
-
-    # fmt: off
-    items = (
-        np.array([
-            [1, 2],
-            [4, 5],
-            [7, 8],
-        ]),
-        np.array([
-            [1, 2, 3],
-            [4, 5, 6],
-        ])
-    )
-    # fmt: on
-
-    for matrix in items:
-        with self.assertRaises(ValueError):
-            s._swap(matrix, 0, 2)</code></pre>
+    for ciphertext, common_letters in items:
+        self.assertEqual(common_letters, s._get_common_letters(ciphertext))</code></pre>
 </details>
 </dd>
 <dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix"><code class="name flex">
@@ -709,8 +663,8 @@ not have a method with the specified name.</p></div>
     self.assertEqual(s._score(m1, m2), 4)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters"><code class="name flex">
-<span>def <span class="ident">test_get_common_letters</span></span>(<span>self)</span>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_swap"><code class="name flex">
+<span>def <span class="ident">test_swap</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -718,17 +672,101 @@ not have a method with the specified name.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def test_get_common_letters(self):
+<pre><code class="python">def test_swap(self):
     s = SimpleSolver(&#34;foo&#34;)
 
+    # fmt: off
     items = (
-        (&#34;aaabbc&#34;, &#34;abc&#34;),
-        (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
-        (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
+        (np.array([
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+        ]), np.array([
+            [5, 4, 6],
+            [2, 1, 3],
+            [8, 7, 9],
+        ]), 0, 1),
+        (np.array([
+            [1, 2, 3, 4],
+            [5, 6, 7, 8],
+            [9, 10, 11, 12],
+            [13, 14, 15, 16],
+        ]), np.array([
+            [1, 4, 3, 2],
+            [13, 16, 15, 14],
+            [9, 12, 11, 10],
+            [5, 8, 7, 6],
+        ]), 1, 3),
+    )
+    # fmt: on
+
+    for matrix, swapped, index1, index2 in items:
+        s._swap(matrix, index1, index2)
+        self.assertTrue(np.array_equal(matrix, swapped))
+
+    # fmt: off
+    items = (
+        np.array([
+            [1, 2],
+            [4, 5],
+            [7, 8],
+        ]),
+        np.array([
+            [1, 2, 3],
+            [4, 5, 6],
+        ])
+    )
+    # fmt: on
+
+    for matrix in items:
+        with self.assertRaises(ValueError):
+            s._swap(matrix, 0, 2)</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext"><code class="name flex">
+<span>def <span class="ident">test_get_plaintext</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_get_plaintext(self):
+    items = (
+        (
+            &#34;qemeiqtxeeuktyuggjmtxesuktge&#34;,  # Ciphertext
+            &#34;etujdikzxgqswbmcfyhanpvlor&#34;,  # Common decryption key
+            &#34;defendtheeastwallofthecastle&#34;,  # Plaintext
+        ),
+        (
+            &#34;uaqaxuryaaljrklvvpqryadljrva&#34;,
+            &#34;arlpsxjcyvudgoqfekiwmntzbh&#34;,
+            &#34;defendtheeastwallofthecastle&#34;,
+        ),
+        (
+            &#34;dzyzedrjzzturbtsslyrjzntursz&#34;,
+            &#34;zrtlxeuqjsdnkpymgbhiacfwov&#34;,
+            &#34;defendtheeastwallofthecastle&#34;,
+        ),
     )
 
-    for ciphertext, common_letters in items:
-        self.assertEqual(common_letters, s._get_common_letters(ciphertext))</code></pre>
+    for ciphertext, common_key, expected_plaintext in items:
+        s = SimpleSolver(ciphertext)
+        self.assertEqual(s._get_plaintext(common_key), expected_plaintext)</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_public_api"><code class="name flex">
+<span>def <span class="ident">test_public_api</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_public_api(self):
+    pass</code></pre>
 </details>
 </dd>
 </dl>
@@ -754,12 +792,14 @@ not have a method with the specified name.</p></div>
 <ul class="">
 <li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_constants" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_constants">test_constants</a></code></li>
 <li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_utils" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_utils">test_utils</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_init" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_init">test_init</a></code></li>
 <li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_initial_key" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_initial_key">test_get_initial_key</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext">test_get_plaintext</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_swap" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_swap">test_swap</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters">test_get_common_letters</a></code></li>
 <li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix">test_get_digram_matrix</a></code></li>
 <li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_score" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_score">test_score</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters">test_get_common_letters</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_swap" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_swap">test_swap</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext">test_get_plaintext</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_public_api" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_public_api">test_public_api</a></code></li>
 </ul>
 </li>
 </ul>

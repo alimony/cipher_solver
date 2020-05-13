@@ -33,6 +33,9 @@ class SimpleSolverTestCase(unittest.TestCase):
         for common_key, alpha_key in items:
             self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
 
+    def test_init(self):
+        pass
+
     def test_get_initial_key(self):
         items = (
             ("aaabbc", "abcdefghijklmnopqrstuvwxyz"),
@@ -46,78 +49,17 @@ class SimpleSolverTestCase(unittest.TestCase):
             s = SimpleSolver(ciphertext)
             self.assertEqual(s._get_initial_key(ciphertext), expected_initial_key)
 
-    def test_get_plaintext(self):
-        items = (
-            (
-                "qemeiqtxeeuktyuggjmtxesuktge",  # Ciphertext
-                "etujdikzxgqswbmcfyhanpvlor",  # Common decryption key
-                "defendtheeastwallofthecastle",  # Plaintext
-            ),
-            (
-                "uaqaxuryaaljrklvvpqryadljrva",
-                "arlpsxjcyvudgoqfekiwmntzbh",
-                "defendtheeastwallofthecastle",
-            ),
-            (
-                "dzyzedrjzzturbtsslyrjzntursz",
-                "zrtlxeuqjsdnkpymgbhiacfwov",
-                "defendtheeastwallofthecastle",
-            ),
-        )
-
-        for ciphertext, common_key, expected_plaintext in items:
-            s = SimpleSolver(ciphertext)
-            self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
-
-    def test_swap(self):
+    def test_get_common_letters(self):
         s = SimpleSolver("foo")
 
-        # fmt: off
         items = (
-            (np.array([
-                [1, 2, 3],
-                [4, 5, 6],
-                [7, 8, 9],
-            ]), np.array([
-                [5, 4, 6],
-                [2, 1, 3],
-                [8, 7, 9],
-            ]), 0, 1),
-            (np.array([
-                [1, 2, 3, 4],
-                [5, 6, 7, 8],
-                [9, 10, 11, 12],
-                [13, 14, 15, 16],
-            ]), np.array([
-                [1, 4, 3, 2],
-                [13, 16, 15, 14],
-                [9, 12, 11, 10],
-                [5, 8, 7, 6],
-            ]), 1, 3),
+            ("aaabbc", "abc"),
+            ("cccccbbbaaaad", "cabd"),
+            ("aaaaaaaaaaaaaaaa", "a"),
         )
-        # fmt: on
 
-        for matrix, swapped, index1, index2 in items:
-            s._swap(matrix, index1, index2)
-            self.assertTrue(np.array_equal(matrix, swapped))
-
-        # fmt: off
-        items = (
-            np.array([
-                [1, 2],
-                [4, 5],
-                [7, 8],
-            ]),
-            np.array([
-                [1, 2, 3],
-                [4, 5, 6],
-            ])
-        )
-        # fmt: on
-
-        for matrix in items:
-            with self.assertRaises(ValueError):
-                s._swap(matrix, 0, 2)
+        for ciphertext, common_letters in items:
+            self.assertEqual(common_letters, s._get_common_letters(ciphertext))
 
     def test_get_digram_matrix(self):
         s = SimpleSolver("foo")
@@ -187,14 +129,78 @@ class SimpleSolverTestCase(unittest.TestCase):
         # fmt: on
         self.assertEqual(s._score(m1, m2), 4)
 
-    def test_get_common_letters(self):
+    def test_swap(self):
         s = SimpleSolver("foo")
 
+        # fmt: off
         items = (
-            ("aaabbc", "abc"),
-            ("cccccbbbaaaad", "cabd"),
-            ("aaaaaaaaaaaaaaaa", "a"),
+            (np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+                [7, 8, 9],
+            ]), np.array([
+                [5, 4, 6],
+                [2, 1, 3],
+                [8, 7, 9],
+            ]), 0, 1),
+            (np.array([
+                [1, 2, 3, 4],
+                [5, 6, 7, 8],
+                [9, 10, 11, 12],
+                [13, 14, 15, 16],
+            ]), np.array([
+                [1, 4, 3, 2],
+                [13, 16, 15, 14],
+                [9, 12, 11, 10],
+                [5, 8, 7, 6],
+            ]), 1, 3),
+        )
+        # fmt: on
+
+        for matrix, swapped, index1, index2 in items:
+            s._swap(matrix, index1, index2)
+            self.assertTrue(np.array_equal(matrix, swapped))
+
+        # fmt: off
+        items = (
+            np.array([
+                [1, 2],
+                [4, 5],
+                [7, 8],
+            ]),
+            np.array([
+                [1, 2, 3],
+                [4, 5, 6],
+            ])
+        )
+        # fmt: on
+
+        for matrix in items:
+            with self.assertRaises(ValueError):
+                s._swap(matrix, 0, 2)
+
+    def test_get_plaintext(self):
+        items = (
+            (
+                "qemeiqtxeeuktyuggjmtxesuktge",  # Ciphertext
+                "etujdikzxgqswbmcfyhanpvlor",  # Common decryption key
+                "defendtheeastwallofthecastle",  # Plaintext
+            ),
+            (
+                "uaqaxuryaaljrklvvpqryadljrva",
+                "arlpsxjcyvudgoqfekiwmntzbh",
+                "defendtheeastwallofthecastle",
+            ),
+            (
+                "dzyzedrjzzturbtsslyrjzntursz",
+                "zrtlxeuqjsdnkpymgbhiacfwov",
+                "defendtheeastwallofthecastle",
+            ),
         )
 
-        for ciphertext, common_letters in items:
-            self.assertEqual(common_letters, s._get_common_letters(ciphertext))
+        for ciphertext, common_key, expected_plaintext in items:
+            s = SimpleSolver(ciphertext)
+            self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
+
+    def test_public_api(self):
+        pass
