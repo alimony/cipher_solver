@@ -4,7 +4,7 @@ from string import ascii_lowercase
 
 import numpy as np
 from consts import (
-    DIGRAM_FREQS_ENGLISH,
+    DIGRAM_MATRIX_ENGLISH,
     ENGLISH_LETTERS_BY_FREQUENCY,
     STANDARD_ALPHABET_SIZE,
 )
@@ -64,7 +64,7 @@ class SimpleSolver:
 
         self._ciphertext = ciphertext.lower()
 
-    def _score(self, matrix1, matrix2=DIGRAM_FREQS_ENGLISH):
+    def _score(self, matrix1, matrix2=DIGRAM_MATRIX_ENGLISH):
         """Calculate a score for passed digram matrices using the distance sum method.
 
         The score is defined as the sum of all the absolute differences between each
@@ -89,7 +89,7 @@ class SimpleSolver:
         """
 
         if matrix1.shape != matrix2.shape:
-            raise ValueError("Digram frequency matrices must have the same dimensions")
+            raise ValueError("Digram matrices must have the same dimensions")
 
         return abs(matrix1 - matrix2).sum()
 
@@ -121,19 +121,19 @@ class SimpleSolver:
         c = Counter(text)
         return "".join([letter[0] for letter in c.most_common()])
 
-    def _get_digram_frequencies(self, text, alphabet_size=STANDARD_ALPHABET_SIZE):
-        """Generate digram frequencies for the passed text.
+    def _get_digram_matrix(self, text, alphabet_size=STANDARD_ALPHABET_SIZE):
+        """Generate digram matrix for the passed text.
 
         Parameters
         ----------
         text : str
-            Text to generate digram frequencies for.
+            Text to generate digram frequency matrix for.
         alphabet_size : int
             The number of letters in the cipher alphabet, defaults to English length.
 
         Returns
         -------
-        digram_frequencies : numpy.array
+        digram_matrix : numpy.array
             An array of digram frequencies indexed by [first][second] letter.
 
         Raises
@@ -153,27 +153,27 @@ class SimpleSolver:
         if len(text) < 2:
             raise ValueError("Text must contain at least one digram.")
 
-        frequencies = np.zeros((alphabet_size, alphabet_size))
+        digram_matrix = np.zeros((alphabet_size, alphabet_size))
 
         text = text.lower()
         text_length = len(text)
 
         # First, count the number of occurrences of each letter and save to the index
-        # that corresponds to the letter pair, i.e. frequencies[0, 0] is for "aa" etc.
+        # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for "aa" etc.
         for i in range(0, text_length - 1):
             a = ascii_lowercase.index(text[i])
             b = ascii_lowercase.index(text[i + 1])
-            frequencies[a, b] += 1
+            digram_matrix[a, b] += 1
 
         # Replace each entry with a percentage of the total text length, to get the same
-        # format as the English digram frequencies.
-        rows, columns = frequencies.shape
+        # format as the English digram matrix.
+        rows, columns = digram_matrix.shape
         for i in range(rows):
             for j in range(columns):
                 # All digram frequencies are in percentages, so convert it here too.
-                frequencies[i, j] = 100 * frequencies[i, j] / text_length
+                digram_matrix[i, j] = 100 * digram_matrix[i, j] / text_length
 
-        return frequencies
+        return digram_matrix
 
     def _get_plaintext(self, decryption_key):
         """Return a plaintext using the passed decryption key.
@@ -306,9 +306,9 @@ class SimpleSolver:
 
         # Generate an initial digram matrix.
         putative_plaintext = self._get_plaintext(key)
-        digram_frequencies = self._get_digram_frequencies(putative_plaintext)
+        digram_matrix = self._get_digram_matrix(putative_plaintext)
 
-        best_score = self._score(digram_frequencies)
+        best_score = self._score(digram_matrix)
 
         iterations_since_last_improvement = 0
 
@@ -322,9 +322,9 @@ class SimpleSolver:
             putative_key[a], putative_key[b] = putative_key[b], putative_key[a]
 
             plaintext = self._get_plaintext(putative_key)
-            putative_digram_frequencies = self._get_digram_frequencies(plaintext)
+            putative_digram_matrix = self._get_digram_matrix(plaintext)
 
-            score = self._score(putative_digram_frequencies)
+            score = self._score(putative_digram_matrix)
 
             iterations_since_last_improvement += 1
 
@@ -364,26 +364,26 @@ class SimpleSolver:
         # We need this as a list so we can modify it in-place.
         key = [c for c in self._decryption_key]
 
-        # Generate digram frequencies from the corresponding plaintext.
+        # Generate digram matrix from the corresponding plaintext.
         putative_plaintext = self._get_plaintext(key)
-        digram_frequencies = self._get_digram_frequencies(putative_plaintext)
+        digram_matrix = self._get_digram_matrix(putative_plaintext)
 
         # Calculate initial score.
-        best_score = self._score(digram_frequencies)
+        best_score = self._score(digram_matrix)
 
-        # Loop and swap rows/columns in digram frequency matrix.
+        # Loop and swap rows/columns in digram matrix.
         for i in range(1, STANDARD_ALPHABET_SIZE):
             for j in range(STANDARD_ALPHABET_SIZE - i):
-                # Try a potential swap in the digram frequency matrix.
-                d = np.copy(digram_frequencies)
+                # Try a potential swap in the digram matrix.
+                d = np.copy(digram_matrix)
                 self._swap(d, j, j + i)
 
                 score = self._score(d)
 
                 if score < best_score:
                     # The score improved, so commit this change in both the digram
-                    # frequency matrix and the key.
-                    digram_frequencies = d
+                    # matrix and the key.
+                    digram_matrix = d
                     key[j], key[j + i] = key[j + i], key[j]
                     best_score = score
 

@@ -43,10 +43,10 @@ ENGLISH_LETTERS_BY_FREQUENCY = "".join(ENGLISH_LETTER_FREQUENCIES.keys())
 # This is a (26 x 26) array containing the digram frequencies for the English language
 # and is used for scoring potential solutions. The row corresponds to the first letter
 # and the column to the second. For example, the frequency for the digram "df" would be
-# at row 4 and column 6, i.e. DIGRAM_FREQS_ENGLISH[3][5], with the value 0.003.
+# at row 4 and column 6, i.e. DIGRAM_MATRIX_ENGLISH[3][5], with the value 0.003.
 # All numbers are in percentages.
 # fmt: off
-DIGRAM_FREQS_ENGLISH = np.array([
+DIGRAM_MATRIX_ENGLISH = np.array([
     [0.003, 0.230, 0.448, 0.368, 0.012, 0.074, 0.205, 0.014, 0.316, 0.012, 0.105, 1.087, 0.285, 1.985, 0.005, 0.203, 0.002, 1.075, 0.871, 1.487, 0.119, 0.205, 0.060, 0.019, 0.217, 0.012],
     [0.146, 0.011, 0.002, 0.002, 0.576, 0.000, 0.000, 0.001, 0.107, 0.023, 0.000, 0.233, 0.003, 0.002, 0.195, 0.001, 0.000, 0.112, 0.046, 0.017, 0.185, 0.004, 0.000, 0.000, 0.176, 0.000],
     [0.538, 0.001, 0.083, 0.002, 0.651, 0.001, 0.001, 0.598, 0.281, 0.000, 0.118, 0.149, 0.003, 0.001, 0.794, 0.001, 0.005, 0.149, 0.023, 0.461, 0.163, 0.000, 0.000, 0.000, 0.042, 0.001],

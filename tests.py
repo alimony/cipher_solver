@@ -3,7 +3,7 @@ from string import ascii_lowercase
 
 import numpy as np
 from consts import (
-    DIGRAM_FREQS_ENGLISH,
+    DIGRAM_MATRIX_ENGLISH,
     ENGLISH_LETTER_FREQUENCIES,
     ENGLISH_LETTERS_BY_FREQUENCY,
     STANDARD_ALPHABET_SIZE,
@@ -14,7 +14,7 @@ from utils import alphabetical_to_common_key, common_to_alphabetical_key
 
 class SimpleSolverTestCase(unittest.TestCase):
     def test_constants(self):
-        self.assertTrue(100 - DIGRAM_FREQS_ENGLISH.sum() < 0.01)
+        self.assertTrue(100 - DIGRAM_MATRIX_ENGLISH.sum() < 0.01)
         self.assertTrue(1 - sum(ENGLISH_LETTER_FREQUENCIES.values()) < 0.001)
         self.assertEqual(len(ENGLISH_LETTER_FREQUENCIES), STANDARD_ALPHABET_SIZE)
         self.assertEqual(len(ENGLISH_LETTERS_BY_FREQUENCY), STANDARD_ALPHABET_SIZE)
@@ -119,12 +119,12 @@ class SimpleSolverTestCase(unittest.TestCase):
             with self.assertRaises(ValueError):
                 s._swap(matrix, 0, 2)
 
-    def test_get_digram_frequencies(self):
+    def test_get_digram_matrix(self):
         s = SimpleSolver("foo")
 
         text = "abababaccz"
 
-        digram_frequencies = s._get_digram_frequencies(text)
+        digram_frequencies = s._get_digram_matrix(text)
 
         # fmt: off
         expected_frequencies = np.array([
@@ -166,11 +166,11 @@ class SimpleSolverTestCase(unittest.TestCase):
         s = SimpleSolver("foo")
 
         # If the score matrix is identical to English we have a "perfect" zero score.
-        self.assertEqual(s._score(DIGRAM_FREQS_ENGLISH, DIGRAM_FREQS_ENGLISH), 0.0)
+        self.assertEqual(s._score(DIGRAM_MATRIX_ENGLISH, DIGRAM_MATRIX_ENGLISH), 0.0)
 
         # Scoring a zero matrix is the equivalent of scoring the English matrix.
         zero_array = np.zeros((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
-        self.assertEqual(s._score(zero_array), DIGRAM_FREQS_ENGLISH.sum())
+        self.assertEqual(s._score(zero_array), DIGRAM_MATRIX_ENGLISH.sum())
 
         one_array = np.ones((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
         self.assertTrue(abs(602.13 - s._score(one_array)) < 0.1)
