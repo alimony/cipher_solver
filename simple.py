@@ -11,12 +11,29 @@ from consts import (
 
 
 class SimpleSolver:
-    """Solver for simple monoalphabetic substitution ciphers."""
+    """Solver for simple monoalphabetic substitution ciphers.
+
+    This solver is based on the paper
+    "A Fast Method for the Cryptanalysis of Substitution Ciphers" by Thomas Jakobsen.
+    The details of the algorithm is described in the solve method docstrings.
+
+    The following terminology is used:
+
+    "ciphertext" : The encrypted text we want to solve to get a plaintext.
+    "plaintext" : The decrypted plaintext using a certain decryption key.
+    "common key" : Key used to generate a plaintext, ordered by most common letter.
+    "alphabetical key" : Decryption key, but ordered alphabetically.
+    "digram" : A pair of letters, e.g. "aa", "cd" etc.
+    "digram matrix" : An (n x n) matrix, where n is the length of the used alphabet,
+                      created from a given text, where the frequency of each digram
+                      relative to the text length is saved to the corresponding index
+                      pair, e.g. (0, 0) for "aa", (0, 1) for "ab" etc.
+    """
 
     def __init__(self, ciphertext):
         """Create new solver.
 
-        This creates a new cipher solver from an initial ciphertext.
+        Creates a new cipher solver from an initial ciphertext.
 
         Parameters
         ----------
@@ -26,7 +43,8 @@ class SimpleSolver:
         Raises
         ------
         ValueError
-            If the passed ciphertext is not a string, or is empty.
+            If the passed ciphertext is not a string.
+            If the passed ciphertext is empty.
         """
 
         if not isinstance(ciphertext, str):
@@ -47,12 +65,59 @@ class SimpleSolver:
         self._ciphertext = ciphertext.lower()
 
     def _score(self, matrix1, matrix2=DIGRAM_FREQS_ENGLISH):
+        """Calculate a score for passed digram matrices using the distance sum method.
+
+        The score is defined as the sum of all the absolute differences between each
+        corresponding element in the two matrices.
+
+        Parameters
+        ----------
+        matrix1 : numpy.array
+            The first matrix to use in the comparison.
+        matrix2 : numpy.array
+            The second matrix to use in the comparison. Defaults to English digrams.
+
+        Returns
+        -------
+        score : float
+            The distance sum of the two matrices.
+
+        Raises
+        ------
+        ValueError
+            If the passed matrices don't have the same number of rows and columns.
+        """
+
         if matrix1.shape != matrix2.shape:
             raise ValueError("Digram frequency matrices must have the same dimensions")
 
         return abs(matrix1 - matrix2).sum()
 
     def _get_common_letters(self, text):
+        """Get all unique letters of the passed text, sorted by frequency.
+
+        Parameters
+        ----------
+        text : str
+            The text to find most common letters for.
+
+        Returns
+        -------
+        common_letters : str
+            The letters of the text ordered by frequency.
+
+        Raises
+        ------
+            If the passed text is not a string.
+            If the passed text is empty.
+        """
+
+        if not isinstance(text, str):
+            raise ValueError("{text} is not a string.")
+
+        if len(text) < 1:
+            raise ValueError("Text must not be empty.")
+
         c = Counter(text)
         return "".join([letter[0] for letter in c.most_common()])
 
@@ -63,12 +128,30 @@ class SimpleSolver:
         ----------
         text : str
             Text to generate digram frequencies for.
+        alphabet_size : int
+            The number of letters in the cipher alphabet, defaults to English length.
 
         Returns
         -------
         digram_frequencies : numpy.array
             An array of digram frequencies indexed by [first][second] letter.
+
+        Raises
+        ------
+        ValueError
+            If the passed alphabet size is less than one
+            If the passed alphabet size is not an integer.
+            If the passed text does not contain at least one digram.
         """
+
+        if not isinstance(alphabet_size, int):
+            raise ValueError("Alphabet size must be an integer.")
+
+        if alphabet_size < 1:
+            raise ValueError("Alphabet must contain at least one letter.")
+
+        if len(text) < 2:
+            raise ValueError("Text must contain at least one digram.")
 
         frequencies = np.zeros((alphabet_size, alphabet_size))
 
@@ -93,13 +176,33 @@ class SimpleSolver:
         return frequencies
 
     def _get_plaintext(self, decryption_key):
+        """Return a plaintext using the passed decryption key.
+
+        Parameters
+        ----------
+        decryption_key : str
+            The decryption key to use for generating the plaintext.
+
+        Returns
+        -------
+        plaintext : str
+            Plaintext from decrypting the ciphertext using the current decryption key.
+
+        Raises
+        ------
+        ValueError
+            If the passed decryption key does not contain all letters of the alphabet.
+        """
+
         if len(set(decryption_key)) != STANDARD_ALPHABET_SIZE:
             raise ValueError(f"Key must include all letters of the alphabet.")
 
         # The decryption key will be in order of most common first, so we need to
         # construct a list of indices where to insert each to get an "alphabetical key"
         # instead.
-        indices = [ascii_lowercase.index(letter) for letter in ascii_lowercase]
+        indices = [
+            ascii_lowercase.index(letter) for letter in ENGLISH_LETTERS_BY_FREQUENCY
+        ]
 
         translation_table = {}
 
@@ -126,7 +229,19 @@ class SimpleSolver:
         -------
         decryption_key : str
             The initial decryption key.
+
+        Raises
+        ------
+        ValueError
+            If the passed ciphertext is not a string.
+            If the passed ciphertext is empty.
         """
+
+        if not isinstance(ciphertext, str):
+            raise ValueError(f"{ciphertext} is not a string.")
+
+        if len(ciphertext) < 1:
+            raise ValueError("Ciphertext cannot be empty.")
 
         decryption_key = self._get_common_letters(ciphertext)
 
@@ -137,7 +252,22 @@ class SimpleSolver:
         return "".join(decryption_key)
 
     def _swap(self, matrix, index1, index2):
-        """Swap the matrix rows and columns at the given indices."""
+        """Swap the matrix rows and columns at the given indices.
+
+        Parameters
+        ----------
+        matrix : numpy.array
+            The matrix to modify in-place.
+        index1 : int
+            The first index to swap between.
+        index2 : int
+            The second index to swap between.
+
+        Raises
+        ------
+        ValueError
+            If the passed matrix is not square.
+        """
 
         rows, columns = matrix.shape
 
@@ -151,9 +281,30 @@ class SimpleSolver:
         matrix[:, [index1, index2]] = matrix[:, [index2, index1]]
 
     def _solve_naive(self):
-        # We need this as a list so we can modify it in-place.
+        """Solve cipher using the naive algorithm based on random key swaps.
+
+        This is the first algorithm described by Jakobsen. It is slow because a
+        plaintext has to be generated and a digram matrix calculated for each iteration.
+        The algorithm works as follows:
+
+        1. Create an initial key that is the ciphertext letters ordered by frequency.
+        2. Generate a putative plaintext using this key.
+        3. Calculate a digram matrix from this plaintext.
+        4. Calculate a score from this digram matrix using the distance sum method.
+        5. Repeat the following steps:
+            6a. Make a copy of the key.
+            6b. Swap two elements at random in this putative key.
+            6c. After each swap, generate a putative plaintext, its digram matrix, and
+                the score of this putative digram matrix.
+            6d. If the score improved, save the modified key as the new best key, and
+                save the improved score as the new best score.
+        7. The algorithm is done when the score hasn't improved for 1,000 iterations.
+        """
+
+        # We need the key as a list so we can modify it in-place.
         key = [c for c in self._decryption_key]
 
+        # Generate an initial digram matrix.
         putative_plaintext = self._get_plaintext(key)
         digram_frequencies = self._get_digram_frequencies(putative_plaintext)
 
@@ -161,28 +312,60 @@ class SimpleSolver:
 
         iterations_since_last_improvement = 0
 
+        # Loop and swap elements in the key at random until the score hasn't improved
+        # for 1,000 iterations.
         while iterations_since_last_improvement < 1000:
-            k = key[:]
+            putative_key = key[:]
+
             a = randint(0, 25)
             b = randint(0, 25)
-            k[a], k[b] = k[b], k[a]
-            p = self._get_plaintext(k)
-            d = self._get_digram_frequencies(p)
-            score = self._score(d)
+            putative_key[a], putative_key[b] = putative_key[b], putative_key[a]
+
+            plaintext = self._get_plaintext(putative_key)
+            putative_digram_frequencies = self._get_digram_frequencies(plaintext)
+
+            score = self._score(putative_digram_frequencies)
+
             iterations_since_last_improvement += 1
+
             if score < best_score:
                 best_score = score
-                key = k[:]
+                key = putative_key[:]
                 iterations_since_last_improvement = 0
 
         self._decryption_key = "".join(key)
 
     def _solve_fast(self):
+        """Solve the cipher using the fast algorithm based on digram matrix swaps.
+
+        This is the second algorithm described by Jakobsen. It is based on the insight
+        that swapping rows and columns in a digram matrix is equivalent to swapping the
+        elements at the same indices in the key that was used to generate the plaintext
+        that was used to generate the digram matrix. The algorithm works as follows:
+
+        1. Create an initial key that is the ciphertext letters ordered by frequency.
+        2. Generate a putative plaintext using this key.
+        3. Calculate a digram matrix from this plaintext.
+        4. Calculate a score from this digram matrix using the distance sum method.
+        5. Repeat the following steps:
+            6a. Make a copy of the digram matrix.
+            6b. Swap rows/elements of the digram matrix at index (0, 1), (1, 2), (2, 3)
+                etc. until the last index of the pair reaches the alphabet length. Then
+                swap rows/columns at index (0, 2), (1, 3), (2, 4) etc. until the last
+                index in the pair reaches the alphabet length. The last swap in this
+                nested loop will be (0, 25).
+            6c. After each swap, calculate a score from the modified digram matrix.
+            6d. If the score improved, save the modified digram matrix as the new best
+                matrix, make the same swap in the key and save it as the new best key,
+                and save the improved score as the new best score.
+        7. The algorithm is done when all swaps have been made.
+        """
+
         # We need this as a list so we can modify it in-place.
         key = [c for c in self._decryption_key]
 
         # Generate digram frequencies from the corresponding plaintext.
-        putative_plaintext = self._get_plaintext(self._common_to_alphabetical_key(key))
+        putative_plaintext = self._get_plaintext(key)
         digram_frequencies = self._get_digram_frequencies(putative_plaintext)
 
         # Calculate initial score.
@@ -207,10 +390,29 @@ class SimpleSolver:
         self._decryption_key = "".join(key)
 
     def solve(self):
+        """Solve the cipher.
+
+        Run the solver and save the resulting decryption key.
+        """
+
+        # We currently use the slow, naive algorithm based on random key swaps.
         self._solve_naive()
 
     def plaintext(self):
+        """Return the plaintext using the current decryption key.
+
+        Returns
+        -------
+        plaintext : str
+            Plaintext from decrypting the ciphertext using the current decryption key.
+        """
+
         return self._get_plaintext(self._decryption_key)
 
     def reset(self):
+        """Reset the solver to its initial state.
+
+        Set the decryption key to its initial state, effectively starting over.
+        """
+
         self._decryption_key = self._get_initial_key(self._ciphertext)
