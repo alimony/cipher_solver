@@ -162,8 +162,12 @@ class SimpleSolver:
         # First, count the number of occurrences of each letter and save to the index
         # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for "aa" etc.
         for i in range(0, text_length - 1):
-            a = ascii_lowercase.index(text[i])
-            b = ascii_lowercase.index(text[i + 1])
+            char1 = text[i]
+            char2 = text[i + 1]
+            if char1 not in ascii_lowercase or char2 not in ascii_lowercase:
+                continue
+            a = ascii_lowercase.index(char1)
+            b = ascii_lowercase.index(char2)
             digram_matrix[a, b] += 1
 
         # Replace each entry with a percentage of the total text length, to get the same
