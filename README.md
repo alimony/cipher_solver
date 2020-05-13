@@ -35,7 +35,7 @@ class SimpleSolver:
         Set the decryption key to its initial state, effectively starting over.
         """
 ```
-See the [documentation]() for full description of methods and their parameters.
+See the [documentation](html/markmag-ovn7) for full description of methods and their parameters.
 
 #### Usage
 
