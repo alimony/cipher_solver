@@ -221,4 +221,16 @@ class SimpleSolverTestCase(unittest.TestCase):
             self.assertEqual(s._get_plaintext(common_key), expected_plaintext)
 
     def test_public_api(self):
-        pass
+        s = SimpleSolver("qemeiqtxeeuktyuggjmtxesuktge")
+
+        self.assertEqual(s.plaintext(), "ienehitseeartlaoodntsecartoe")
+
+        k = s._decryption_key
+
+        # After solving, the decryption key should have changed.
+        s.solve()
+        self.assertNotEqual(k, s._decryption_key)
+
+        # After resetting, the decryption key should be back to the default one.
+        s.reset()
+        self.assertEqual(k, s._decryption_key)
