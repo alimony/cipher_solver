@@ -29,6 +29,7 @@ class SimpleSolver:
                       created from a given text, where the frequency of each digram
                       relative to the text length is saved to the corresponding index
                       pair, e.g. (0, 0) for "aa", (0, 1) for "ab" etc.
+    "distance sum" : The method used to score solutions, see ._score() for details.
     """
 
     def __init__(self, ciphertext):
