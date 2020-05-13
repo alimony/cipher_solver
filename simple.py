@@ -104,9 +104,15 @@ class SimpleSolver:
         if len(set(decryption_key)) != STANDARD_ALPHABET_SIZE:
             raise ValueError(f"Key must include all letters of the alphabet.")
 
+        # The decryption key will be in order of most common first, so we need to
+        # construct a list of indices where to insert each to get an "alphabetical key"
+        # instead.
+        indices = [ascii_lowercase.index(letter) for letter in ascii_lowercase]
+
         translation_table = {}
 
-        for cipher_letter, plain_letter in zip(decryption_key, ascii_lowercase):
+        for cipher_letter, index in zip(decryption_key, indices):
+            plain_letter = ascii_lowercase[index]
             translation_table[cipher_letter] = plain_letter
 
         return "".join([translation_table[c] for c in self._ciphertext])
