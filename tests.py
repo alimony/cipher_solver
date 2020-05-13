@@ -9,6 +9,7 @@ from consts import (
     STANDARD_ALPHABET_SIZE,
 )
 from simple import SimpleSolver
+from utils import alphabetical_to_common_key, common_to_alphabetical_key
 
 
 class SimpleSolverTestCase(unittest.TestCase):
@@ -17,6 +18,20 @@ class SimpleSolverTestCase(unittest.TestCase):
         self.assertTrue(1 - sum(ENGLISH_LETTER_FREQUENCIES.values()) < 0.001)
         self.assertEqual(len(ENGLISH_LETTER_FREQUENCIES), STANDARD_ALPHABET_SIZE)
         self.assertEqual(len(ENGLISH_LETTERS_BY_FREQUENCY), STANDARD_ALPHABET_SIZE)
+
+    def test_utils(self):
+        items = (
+            (ENGLISH_LETTERS_BY_FREQUENCY, ascii_lowercase),
+            ("ocewzklnsxbfaqvthrdupmgijy", "eufbovhszimxqkwtjnlcaprgdy"),
+        )
+
+        # Test conversion from common to alphabetical key.
+        for common_key, alpha_key in items:
+            self.assertEqual(alpha_key, common_to_alphabetical_key(common_key))
+
+        # Test conversion from alphabetical key to common key.
+        for common_key, alpha_key in items:
+            self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
 
     def test_get_initial_key(self):
         items = (
