@@ -77,7 +77,13 @@ python solve.py texts/26_char_key/ciphertexts/ciphertext_frankenstein_500chars.t
 
 #### Running tests
 
+Run all tests:
+
 `make test`
+
+Check coverage:
+
+`make coverage`
 
 #### Generating documentation
 
