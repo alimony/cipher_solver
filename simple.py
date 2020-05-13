@@ -399,7 +399,7 @@ class SimpleSolver:
         self._solve_naive()
 
     def plaintext(self):
-        """Return the plaintext using the current decryption key.
+        """Return a plaintext using the current decryption key.
 
         Returns
         -------
