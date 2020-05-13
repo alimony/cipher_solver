@@ -174,6 +174,7 @@ class SimpleSolver:
 
         # First, count the number of occurrences of each letter and save to the index
         # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for "aa" etc.
+        num_digrams = 0
         for i in range(0, text_length - 1):
             char1 = text[i]
             char2 = text[i + 1]
@@ -182,14 +183,15 @@ class SimpleSolver:
             a = ascii_lowercase.index(char1)
             b = ascii_lowercase.index(char2)
             digram_matrix[a, b] += 1
+            num_digrams += 1
 
-        # Replace each entry with a percentage of the total text length, to get the same
-        # format as the English digram matrix.
+        # Replace each entry with a percentage of the total number of digrams, to get
+        # the same format as the English digram matrix.
         rows, columns = digram_matrix.shape
         for i in range(rows):
             for j in range(columns):
                 # All digram frequencies are in percentages, so convert it here too.
-                digram_matrix[i, j] = 100 * digram_matrix[i, j] / text_length
+                digram_matrix[i, j] = 100 * digram_matrix[i, j] / num_digrams
 
         return digram_matrix
 

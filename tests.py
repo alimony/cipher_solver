@@ -67,10 +67,6 @@ class SimpleSolverTestCase(unittest.TestCase):
     def test_get_digram_matrix(self):
         s = SimpleSolver("foo")
 
-        text = "abababaccz"
-
-        digram_frequencies = s._get_digram_matrix(text)
-
         # fmt: off
         expected_frequencies = np.array([
             [0, 30, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -98,14 +94,27 @@ class SimpleSolverTestCase(unittest.TestCase):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
         ])
         # fmt: on
 
-        rows, columns = digram_frequencies.shape
-        for i in range(rows):
-            for j in range(columns):
-                self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
+        # These should all yield the same digram matrix since case and special chars are
+        # ignored when calculating it.
+        items = (
+            "abababacczz",
+            "aBabAbacCzz",
+            "ABABABACCZz",
+            "*zz**ABab ..abac ba ...cc-cZ",
+        )
+
+        for text in items:
+            digram_frequencies = s._get_digram_matrix(text)
+            rows, columns = digram_frequencies.shape
+            for i in range(rows):
+                for j in range(columns):
+                    self.assertTrue(
+                        np.allclose(digram_frequencies, expected_frequencies)
+                    )
 
     def test_score(self):
         s = SimpleSolver("foo")
