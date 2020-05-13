@@ -34,7 +34,10 @@ class SimpleSolverTestCase(unittest.TestCase):
             self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
 
     def test_init(self):
-        pass
+        s = SimpleSolver("foo")
+
+        self.assertEqual(s._decryption_key, "ofabcdeghijklmnpqrstuvwxyz")
+        self.assertEqual(s._ciphertext, "foo")
 
     def test_get_initial_key(self):
         items = (
