@@ -215,7 +215,7 @@ class SimpleSolver:
             plain_letter = ascii_lowercase[index]
             translation_table[key_letter] = plain_letter
 
-        return "".join([translation_table[c] for c in self._ciphertext])
+        return "".join([translation_table.get(c, c) for c in self._ciphertext])
 
     def _get_initial_key(self, ciphertext):
         """Construct the initial decryption key.
