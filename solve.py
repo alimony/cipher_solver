@@ -11,26 +11,32 @@ SOLVERS = {
     "simple": SimpleSolver,
 }
 
-cipher_type = "simple"
 
-for arg in sys.argv:
-    if "--type" in arg:
-        _, cipher_type = arg.split("=")
+def main():
+    cipher_type = "simple"
 
-if cipher_type not in SOLVERS:
-    sys.exit(f'Unknown cipher type "{cipher_type}"')
+    for arg in sys.argv:
+        if "--type" in arg:
+            _, cipher_type = arg.split("=")
 
-solver_class = SOLVERS[cipher_type]
+    if cipher_type not in SOLVERS:
+        sys.exit(f'Unknown cipher type "{cipher_type}"')
 
-input_file = sys.argv[-1]
+    solver_class = SOLVERS[cipher_type]
 
-with open(input_file) as f:
-    ciphertext = f.read().strip()
+    input_file = sys.argv[-1]
 
-s = solver_class(ciphertext)
+    with open(input_file) as f:
+        ciphertext = f.read().strip()
 
-print(f"\nCiphertext:\n{ciphertext}")
+    s = solver_class(ciphertext)
 
-s.solve()
+    print(f"\nCiphertext:\n{ciphertext}")
 
-print(f"\nPlaintext:\n{s.plaintext()}\n")
+    s.solve()
+
+    print(f"\nPlaintext:\n{s.plaintext()}\n")
+
+
+if __name__ == "__main__":
+    main()
