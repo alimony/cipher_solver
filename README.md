@@ -37,6 +37,10 @@ class SimpleSolver:
 ```
 See the [documentation](html/markmag-ovn7) for full description of methods and their parameters.
 
+#### Requirements
+
+* numpy
+
 #### Usage
 
 ```python
