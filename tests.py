@@ -198,14 +198,3 @@ class SimpleSolverTestCase(unittest.TestCase):
 
         for ciphertext, common_letters in items:
             self.assertEqual(common_letters, s._get_common_letters(ciphertext))
-
-    def test_common_to_alphabetical_key(self):
-        s = SimpleSolver("foo")
-
-        items = (
-            (ENGLISH_LETTERS_BY_FREQUENCY, ascii_lowercase),
-            ("ocewzklnsxbfaqvthrdupmgijy", "eufbovhszimxqkwtjnlcaprgdy"),
-        )
-
-        for common_key, alpha_key in items:
-            self.assertEqual(alpha_key, s._common_to_alphabetical_key(common_key))
