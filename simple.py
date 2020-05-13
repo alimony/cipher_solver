@@ -1,4 +1,5 @@
 from collections import Counter
+from random import randint
 from string import ascii_lowercase
 
 import numpy as np
@@ -158,10 +159,36 @@ class SimpleSolver:
         # Swap columns:
         matrix[:, [index1, index2]] = matrix[:, [index2, index1]]
 
-    def solve(self):
+    def _solve_naive(self):
         # We need this as a list so we can modify it in-place.
         key = [c for c in self._decryption_key]
 
+        putative_plaintext = self._get_plaintext(key)
+        digram_frequencies = self._get_digram_frequencies(putative_plaintext)
+
+        best_score = self._score(digram_frequencies)
+
+        iterations_since_last_improvement = 0
+
+        while iterations_since_last_improvement < 1000:
+            k = key[:]
+            a = randint(0, 25)
+            b = randint(0, 25)
+            k[a], k[b] = k[b], k[a]
+            p = self._get_plaintext(k)
+            d = self._get_digram_frequencies(p)
+            score = self._score(d)
+            iterations_since_last_improvement += 1
+            if score < best_score:
+                best_score = score
+                key = k[:]
+                iterations_since_last_improvement = 0
+
+        self._decryption_key = "".join(key)
+
+    def _solve_fast(self):
+        # We need this as a list so we can modify it in-place.
+        key = [c for c in self._decryption_key]
 
         # Generate digram frequencies from the corresponding plaintext.
         putative_plaintext = self._get_plaintext(self._common_to_alphabetical_key(key))
@@ -188,10 +215,11 @@ class SimpleSolver:
 
         self._decryption_key = "".join(key)
 
-    def plaintext(self):
-        alphabetical_key = self._common_to_alphabetical_key(self._decryption_key)
+    def solve(self):
+        self._solve_naive()
 
-        return self._get_plaintext(alphabetical_key)
+    def plaintext(self):
+        return self._get_plaintext(self._decryption_key)
 
     def reset(self):
         self._decryption_key = self._get_initial_key(self._ciphertext)
