@@ -156,10 +156,6 @@ class SimpleSolver:
         # We need this as a list so we can modify it in-place.
         key = [c for c in self._decryption_key]
 
-        print(f"starting with key = {''.join(key)}")
-        print(
-            f"starting with alphabetical key = {self._common_to_alphabetical_key(''.join(key))}"
-        )
 
         # Generate digram frequencies from the corresponding plaintext.
         putative_plaintext = self._get_plaintext(self._common_to_alphabetical_key(key))
@@ -167,22 +163,17 @@ class SimpleSolver:
 
         # Calculate initial score.
         best_score = self._score(digram_frequencies)
-        print(f"best_score = {best_score}")
 
         # Loop and swap rows/columns in digram frequency matrix.
         for i in range(1, STANDARD_ALPHABET_SIZE):
             for j in range(STANDARD_ALPHABET_SIZE - i):
                 # Try a potential swap in the digram frequency matrix.
                 d = np.copy(digram_frequencies)
-                # print(f"Swapping index {j} and {j + i}")
                 self._swap(d, j, j + i)
 
-                # See if the new matrix has a better score.
                 score = self._score(d)
-                print(f"score = {score}")
 
                 if score < best_score:
-                    print(f"new best_score = {score}")
                     # The score improved, so commit this change in both the digram
                     # frequency matrix and the key.
                     digram_frequencies = d
@@ -190,10 +181,6 @@ class SimpleSolver:
                     best_score = score
 
         self._decryption_key = "".join(key)
-        print(f"final key: {self._decryption_key}")
-        print(
-            f"final alphabetical key: {self._common_to_alphabetical_key(self._decryption_key)}"
-        )
 
     def plaintext(self):
         alphabetical_key = self._common_to_alphabetical_key(self._decryption_key)
