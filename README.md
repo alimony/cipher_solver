@@ -53,7 +53,8 @@ print(h.plaintext())  # We have an alternative solution now.
 ```
 
 Note, however, that the above ciphertext is too short to give any meaningful results.
-A length of at least 300 letters is usually necessary to solve a cipher.
+A length of at least 300 letters is usually necessary to solve a cipher. See below for
+an example using an included sample text.
 
 #### CLI
 
@@ -61,7 +62,13 @@ A simple command-line interface is included. To solve a cipher, put it into a te
 using whatever alphabet is suitable, and run:
 
 ```bash
-solve.py [--type=simple] <path_to_ciphertext_file>
+python solve.py [--type=simple] <path_to_ciphertext_file>
+```
+
+Example:
+
+```bash
+python solve.py texts/26_char_key/ciphertexts/ciphertext_frankenstein_500chars.txt
 ```
 
 #### Running tests
