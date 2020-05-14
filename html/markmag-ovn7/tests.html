@@ -24,7 +24,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import unittest
+<pre><code class="python">import random
+import unittest
 from string import ascii_lowercase
 
 import numpy as np
@@ -35,7 +36,7 @@ from consts import (
     STANDARD_ALPHABET_SIZE,
 )
 from simple import SimpleSolver
-from utils import alphabetical_to_common_key, common_to_alphabetical_key
+from utils import alphabetical_to_common_key, common_to_alphabetical_key, encrypt
 
 
 class SimpleSolverTestCase(unittest.TestCase):
@@ -52,12 +53,29 @@ class SimpleSolverTestCase(unittest.TestCase):
         )
 
         # Test conversion from common to alphabetical key.
-        for common_key, alpha_key in items:
-            self.assertEqual(alpha_key, common_to_alphabetical_key(common_key))
+        for common_key, alphabetical_key in items:
+            self.assertEqual(alphabetical_key, common_to_alphabetical_key(common_key))
 
         # Test conversion from alphabetical key to common key.
-        for common_key, alpha_key in items:
-            self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
+        for common_key, alphabetical_key in items:
+            self.assertEqual(common_key, alphabetical_to_common_key(alphabetical_key))
+
+        # Test encrypting from ciphertext and alphabetical key.
+        items = (
+            (
+                &#34;I am already far north of London.&#34;,
+                &#34;jhdxmuvpltbwnayzscrefqogik&#34;,
+                &#34;L jn jwcmjxi ujc aycep yu Wyaxya.&#34;,
+            ),
+            (
+                &#34;I am already far north of London.&#34;,
+                ascii_lowercase,
+                &#34;I am already far north of London.&#34;,
+            ),
+        )
+
+        for plaintext, alphabetical_key, ciphertext in items:
+            self.assertEqual(encrypt(plaintext, alphabetical_key), ciphertext)
 
     def test_init(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -111,9 +129,10 @@ class SimpleSolverTestCase(unittest.TestCase):
 
         # fmt: off
         expected_frequencies = np.array([
-            [0, 30, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
+            # e, t, a, o, ...
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -122,6 +141,7 @@ class SimpleSolverTestCase(unittest.TestCase):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -129,8 +149,7 @@ class SimpleSolverTestCase(unittest.TestCase):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -152,11 +171,7 @@ class SimpleSolverTestCase(unittest.TestCase):
         for text in items:
             digram_frequencies = s._get_digram_matrix(text)
             rows, columns = digram_frequencies.shape
-            for i in range(rows):
-                for j in range(columns):
-                    self.assertTrue(
-                        np.allclose(digram_frequencies, expected_frequencies)
-                    )
+            self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
 
     def test_score(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -284,7 +299,47 @@ class SimpleSolverTestCase(unittest.TestCase):
 
         # After resetting, the decryption key should be back to the default one.
         s.reset()
-        self.assertEqual(k, s._decryption_key)</code></pre>
+        self.assertEqual(k, s._decryption_key)
+
+        # Should return the decryption key in alphabetical form.
+        self.assertEqual(s.decryption_key(), &#34;unsjecfiqvpybmgdwkxtaohrlz&#34;)
+
+    def test_matrix_key_swap(self):
+        # The algorithm is based on the premise that if a digram matrix is created from
+        # a plaintext using a certain key, swapping the letters at index (a, b) in that
+        # key and creating a new plaintext using the modified key, the digram matrix for
+        # that new plaintext will be identical to the first matrix but with the rows and
+        # columns at index (a, b) swapped. In other words, swapping rows and columns in
+        # the digram matrix is equivalent to swapping letters in the key. We need to
+        # test that this premise holds.
+
+        # We might as well test that this is true for all possible swaps.
+        for a in range(STANDARD_ALPHABET_SIZE):
+            for b in range(STANDARD_ALPHABET_SIZE):
+                if a == b:
+                    continue
+
+                ciphertext = &#34;&#34;.join(random.choices(ascii_lowercase, k=100))
+
+                s = SimpleSolver(ciphertext)
+
+                plaintext1 = s.plaintext()
+                matrix1 = s._get_digram_matrix(plaintext1)
+
+                # First, swap rows and columns in the original matrix.
+                s._swap_matrix(matrix1, a, b)
+
+                # Then make the same swap in the key and generate a new matrix.
+                key = [c for c in s._decryption_key]
+                key[a], key[b] = key[b], key[a]
+                s._decryption_key = &#34;&#34;.join(key)
+                plaintext2 = s.plaintext()
+                matrix2 = s._get_digram_matrix(plaintext2)
+
+                # We now have the original matrix where we swapped rows and columns,
+                # and the new matrix that was generated from plaintext using the key
+                # in which we swapped the letters at the same index.
+                self.assertTrue(np.allclose(matrix1, matrix2))</code></pre>
 </details>
 </section>
 <section>
@@ -347,12 +402,29 @@ not have a method with the specified name.</p></div>
         )
 
         # Test conversion from common to alphabetical key.
-        for common_key, alpha_key in items:
-            self.assertEqual(alpha_key, common_to_alphabetical_key(common_key))
+        for common_key, alphabetical_key in items:
+            self.assertEqual(alphabetical_key, common_to_alphabetical_key(common_key))
 
         # Test conversion from alphabetical key to common key.
-        for common_key, alpha_key in items:
-            self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
+        for common_key, alphabetical_key in items:
+            self.assertEqual(common_key, alphabetical_to_common_key(alphabetical_key))
+
+        # Test encrypting from ciphertext and alphabetical key.
+        items = (
+            (
+                &#34;I am already far north of London.&#34;,
+                &#34;jhdxmuvpltbwnayzscrefqogik&#34;,
+                &#34;L jn jwcmjxi ujc aycep yu Wyaxya.&#34;,
+            ),
+            (
+                &#34;I am already far north of London.&#34;,
+                ascii_lowercase,
+                &#34;I am already far north of London.&#34;,
+            ),
+        )
+
+        for plaintext, alphabetical_key, ciphertext in items:
+            self.assertEqual(encrypt(plaintext, alphabetical_key), ciphertext)
 
     def test_init(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -406,9 +478,10 @@ not have a method with the specified name.</p></div>
 
         # fmt: off
         expected_frequencies = np.array([
-            [0, 30, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
+            # e, t, a, o, ...
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -417,6 +490,7 @@ not have a method with the specified name.</p></div>
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -424,8 +498,7 @@ not have a method with the specified name.</p></div>
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -447,11 +520,7 @@ not have a method with the specified name.</p></div>
         for text in items:
             digram_frequencies = s._get_digram_matrix(text)
             rows, columns = digram_frequencies.shape
-            for i in range(rows):
-                for j in range(columns):
-                    self.assertTrue(
-                        np.allclose(digram_frequencies, expected_frequencies)
-                    )
+            self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
 
     def test_score(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -579,7 +648,47 @@ not have a method with the specified name.</p></div>
 
         # After resetting, the decryption key should be back to the default one.
         s.reset()
-        self.assertEqual(k, s._decryption_key)</code></pre>
+        self.assertEqual(k, s._decryption_key)
+
+        # Should return the decryption key in alphabetical form.
+        self.assertEqual(s.decryption_key(), &#34;unsjecfiqvpybmgdwkxtaohrlz&#34;)
+
+    def test_matrix_key_swap(self):
+        # The algorithm is based on the premise that if a digram matrix is created from
+        # a plaintext using a certain key, swapping the letters at index (a, b) in that
+        # key and creating a new plaintext using the modified key, the digram matrix for
+        # that new plaintext will be identical to the first matrix but with the rows and
+        # columns at index (a, b) swapped. In other words, swapping rows and columns in
+        # the digram matrix is equivalent to swapping letters in the key. We need to
+        # test that this premise holds.
+
+        # We might as well test that this is true for all possible swaps.
+        for a in range(STANDARD_ALPHABET_SIZE):
+            for b in range(STANDARD_ALPHABET_SIZE):
+                if a == b:
+                    continue
+
+                ciphertext = &#34;&#34;.join(random.choices(ascii_lowercase, k=100))
+
+                s = SimpleSolver(ciphertext)
+
+                plaintext1 = s.plaintext()
+                matrix1 = s._get_digram_matrix(plaintext1)
+
+                # First, swap rows and columns in the original matrix.
+                s._swap_matrix(matrix1, a, b)
+
+                # Then make the same swap in the key and generate a new matrix.
+                key = [c for c in s._decryption_key]
+                key[a], key[b] = key[b], key[a]
+                s._decryption_key = &#34;&#34;.join(key)
+                plaintext2 = s.plaintext()
+                matrix2 = s._get_digram_matrix(plaintext2)
+
+                # We now have the original matrix where we swapped rows and columns,
+                # and the new matrix that was generated from plaintext using the key
+                # in which we swapped the letters at the same index.
+                self.assertTrue(np.allclose(matrix1, matrix2))</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -619,12 +728,29 @@ not have a method with the specified name.</p></div>
     )
 
     # Test conversion from common to alphabetical key.
-    for common_key, alpha_key in items:
-        self.assertEqual(alpha_key, common_to_alphabetical_key(common_key))
+    for common_key, alphabetical_key in items:
+        self.assertEqual(alphabetical_key, common_to_alphabetical_key(common_key))
 
     # Test conversion from alphabetical key to common key.
-    for common_key, alpha_key in items:
-        self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))</code></pre>
+    for common_key, alphabetical_key in items:
+        self.assertEqual(common_key, alphabetical_to_common_key(alphabetical_key))
+
+    # Test encrypting from ciphertext and alphabetical key.
+    items = (
+        (
+            &#34;I am already far north of London.&#34;,
+            &#34;jhdxmuvpltbwnayzscrefqogik&#34;,
+            &#34;L jn jwcmjxi ujc aycep yu Wyaxya.&#34;,
+        ),
+        (
+            &#34;I am already far north of London.&#34;,
+            ascii_lowercase,
+            &#34;I am already far north of London.&#34;,
+        ),
+    )
+
+    for plaintext, alphabetical_key, ciphertext in items:
+        self.assertEqual(encrypt(plaintext, alphabetical_key), ciphertext)</code></pre>
 </details>
 </dd>
 <dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_init"><code class="name flex">
@@ -718,9 +844,10 @@ not have a method with the specified name.</p></div>
 
     # fmt: off
     expected_frequencies = np.array([
-        [0, 30, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-        [30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-        [0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
+        # e, t, a, o, ...
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 30, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -729,6 +856,7 @@ not have a method with the specified name.</p></div>
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -736,8 +864,7 @@ not have a method with the specified name.</p></div>
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+        [0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -759,11 +886,7 @@ not have a method with the specified name.</p></div>
     for text in items:
         digram_frequencies = s._get_digram_matrix(text)
         rows, columns = digram_frequencies.shape
-        for i in range(rows):
-            for j in range(columns):
-                self.assertTrue(
-                    np.allclose(digram_frequencies, expected_frequencies)
-                )</code></pre>
+        self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))</code></pre>
 </details>
 </dd>
 <dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_score"><code class="name flex">
@@ -931,7 +1054,57 @@ not have a method with the specified name.</p></div>
 
     # After resetting, the decryption key should be back to the default one.
     s.reset()
-    self.assertEqual(k, s._decryption_key)</code></pre>
+    self.assertEqual(k, s._decryption_key)
+
+    # Should return the decryption key in alphabetical form.
+    self.assertEqual(s.decryption_key(), &#34;unsjecfiqvpybmgdwkxtaohrlz&#34;)</code></pre>
+</details>
+</dd>
+<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_matrix_key_swap"><code class="name flex">
+<span>def <span class="ident">test_matrix_key_swap</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def test_matrix_key_swap(self):
+    # The algorithm is based on the premise that if a digram matrix is created from
+    # a plaintext using a certain key, swapping the letters at index (a, b) in that
+    # key and creating a new plaintext using the modified key, the digram matrix for
+    # that new plaintext will be identical to the first matrix but with the rows and
+    # columns at index (a, b) swapped. In other words, swapping rows and columns in
+    # the digram matrix is equivalent to swapping letters in the key. We need to
+    # test that this premise holds.
+
+    # We might as well test that this is true for all possible swaps.
+    for a in range(STANDARD_ALPHABET_SIZE):
+        for b in range(STANDARD_ALPHABET_SIZE):
+            if a == b:
+                continue
+
+            ciphertext = &#34;&#34;.join(random.choices(ascii_lowercase, k=100))
+
+            s = SimpleSolver(ciphertext)
+
+            plaintext1 = s.plaintext()
+            matrix1 = s._get_digram_matrix(plaintext1)
+
+            # First, swap rows and columns in the original matrix.
+            s._swap_matrix(matrix1, a, b)
+
+            # Then make the same swap in the key and generate a new matrix.
+            key = [c for c in s._decryption_key]
+            key[a], key[b] = key[b], key[a]
+            s._decryption_key = &#34;&#34;.join(key)
+            plaintext2 = s.plaintext()
+            matrix2 = s._get_digram_matrix(plaintext2)
+
+            # We now have the original matrix where we swapped rows and columns,
+            # and the new matrix that was generated from plaintext using the key
+            # in which we swapped the letters at the same index.
+            self.assertTrue(np.allclose(matrix1, matrix2))</code></pre>
 </details>
 </dd>
 </dl>
@@ -965,6 +1138,7 @@ not have a method with the specified name.</p></div>
 <li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_swap_matrix" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_swap_matrix">test_swap_matrix</a></code></li>
 <li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext">test_get_plaintext</a></code></li>
 <li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_public_api" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_public_api">test_public_api</a></code></li>
+<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_matrix_key_swap" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_matrix_key_swap">test_matrix_key_swap</a></code></li>
 </ul>
 </li>
 </ul>

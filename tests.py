@@ -275,6 +275,9 @@ class SimpleSolverTestCase(unittest.TestCase):
         s.reset()
         self.assertEqual(k, s._decryption_key)
 
+        # Should return the decryption key in alphabetical form.
+        self.assertEqual(s.decryption_key(), "unsjecfiqvpybmgdwkxtaohrlz")
+
     def test_matrix_key_swap(self):
         # The algorithm is based on the premise that if a digram matrix is created from
         # a plaintext using a certain key, swapping the letters at index (a, b) in that

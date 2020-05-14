@@ -9,6 +9,7 @@ from consts import (
     RANDOM_INDEX_DISTRIBUTION,
     STANDARD_ALPHABET_SIZE,
 )
+from utils import common_to_alphabetical_key
 
 
 class SimpleSolver:
@@ -438,6 +439,17 @@ class SimpleSolver:
         """
 
         return self._get_plaintext(self._decryption_key)
+
+    def decryption_key(self):
+        """Return the current alphabetical decryption key.
+
+        Returns
+        -------
+        alphabetical_key : str
+            The current decryption key in alphabetical form.
+        """
+
+        return common_to_alphabetical_key(self._decryption_key)
 
     def reset(self):
         """Reset the solver to its initial state.

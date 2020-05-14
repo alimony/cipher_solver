@@ -24,7 +24,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from string import ascii_lowercase
+<pre><code class="python">from string import ascii_lowercase, ascii_uppercase
 
 from consts import ENGLISH_LETTERS_BY_FREQUENCY, STANDARD_ALPHABET_SIZE
 
@@ -76,7 +76,42 @@ def alphabetical_to_common_key(alphabetical_key):
 
     indices = [ascii_lowercase.index(letter) for letter in ENGLISH_LETTERS_BY_FREQUENCY]
 
-    return &#34;&#34;.join([alphabetical_key[index] for index in indices])</code></pre>
+    return &#34;&#34;.join([alphabetical_key[index] for index in indices])
+
+
+def encrypt(plaintext, alphabetical_key):
+    &#34;&#34;&#34;Create a ciphertext from the passed plaintext, using an alphabetical key.
+
+    Case and special chars are preserved.
+
+    Parameters
+    ----------
+    plaintext : str
+        The plaintext to encrypt.
+    alphabetical_key : str
+        The alphabetical key to use when creating the ciphertext.
+
+    Returns
+    -------
+    ciphertext : str
+        The encrypted text.
+    &#34;&#34;&#34;
+
+    translation_table = {}
+
+    for plain_letter, key_letter in zip(ascii_lowercase, alphabetical_key):
+        translation_table[plain_letter] = key_letter
+
+    ciphertext = &#34;&#34;
+
+    for c in plaintext:
+        is_upper = c in ascii_uppercase
+        letter = translation_table.get(c.lower(), c)
+        if is_upper:
+            letter = letter.upper()
+        ciphertext += letter
+
+    return ciphertext</code></pre>
 </details>
 </section>
 <section>
@@ -180,6 +215,63 @@ be at index 0, second most common at index 1, and so on.</p>
     return &#34;&#34;.join([alphabetical_key[index] for index in indices])</code></pre>
 </details>
 </dd>
+<dt id="markmag-ovn7.utils.encrypt"><code class="name flex">
+<span>def <span class="ident">encrypt</span></span>(<span>plaintext, alphabetical_key)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a ciphertext from the passed plaintext, using an alphabetical key.</p>
+<p>Case and special chars are preserved.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>plaintext</code></strong> :&ensp;<code>str</code></dt>
+<dd>The plaintext to encrypt.</dd>
+<dt><strong><code>alphabetical_key</code></strong> :&ensp;<code>str</code></dt>
+<dd>The alphabetical key to use when creating the ciphertext.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><strong><code>ciphertext</code></strong> :&ensp;<code>str</code></dt>
+<dd>The encrypted text.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def encrypt(plaintext, alphabetical_key):
+    &#34;&#34;&#34;Create a ciphertext from the passed plaintext, using an alphabetical key.
+
+    Case and special chars are preserved.
+
+    Parameters
+    ----------
+    plaintext : str
+        The plaintext to encrypt.
+    alphabetical_key : str
+        The alphabetical key to use when creating the ciphertext.
+
+    Returns
+    -------
+    ciphertext : str
+        The encrypted text.
+    &#34;&#34;&#34;
+
+    translation_table = {}
+
+    for plain_letter, key_letter in zip(ascii_lowercase, alphabetical_key):
+        translation_table[plain_letter] = key_letter
+
+    ciphertext = &#34;&#34;
+
+    for c in plaintext:
+        is_upper = c in ascii_uppercase
+        letter = translation_table.get(c.lower(), c)
+        if is_upper:
+            letter = letter.upper()
+        ciphertext += letter
+
+    return ciphertext</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -200,6 +292,7 @@ be at index 0, second most common at index 1, and so on.</p>
 <ul class="">
 <li><code><a title="markmag-ovn7.utils.common_to_alphabetical_key" href="#markmag-ovn7.utils.common_to_alphabetical_key">common_to_alphabetical_key</a></code></li>
 <li><code><a title="markmag-ovn7.utils.alphabetical_to_common_key" href="#markmag-ovn7.utils.alphabetical_to_common_key">alphabetical_to_common_key</a></code></li>
+<li><code><a title="markmag-ovn7.utils.encrypt" href="#markmag-ovn7.utils.encrypt">encrypt</a></code></li>
 </ul>
 </li>
 </ul>
