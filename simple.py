@@ -224,7 +224,7 @@ class SimpleSolver:
 
         return abs(matrix1 - matrix2).sum()
 
-    def _swap(self, matrix, index1, index2):
+    def _swap_matrix(self, matrix, index1, index2):
         """Swap the matrix rows and columns at the given indices.
 
         Parameters
@@ -395,7 +395,7 @@ class SimpleSolver:
             for j in range(STANDARD_ALPHABET_SIZE - i):
                 # Try a potential swap in the digram matrix.
                 d = np.copy(digram_matrix)
-                self._swap(d, j, j + i)
+                self._swap_matrix(d, j, j + i)
 
                 score = self._score(d)
 

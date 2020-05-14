@@ -170,7 +170,7 @@ class SimpleSolverTestCase(unittest.TestCase):
         with self.assertRaises(ValueError):
             s._score(np.array([1, 2]), np.array([1, 2, 3]))
 
-    def test_swap(self):
+    def test_swap_matrix(self):
         s = SimpleSolver("foo")
 
         # fmt: off
@@ -199,7 +199,7 @@ class SimpleSolverTestCase(unittest.TestCase):
         # fmt: on
 
         for matrix, swapped, index1, index2 in items:
-            s._swap(matrix, index1, index2)
+            s._swap_matrix(matrix, index1, index2)
             self.assertTrue(np.array_equal(matrix, swapped))
 
         # fmt: off
@@ -218,7 +218,7 @@ class SimpleSolverTestCase(unittest.TestCase):
 
         for matrix in items:
             with self.assertRaises(ValueError):
-                s._swap(matrix, 0, 2)
+                s._swap_matrix(matrix, 0, 2)
 
     def test_get_plaintext(self):
         items = (
