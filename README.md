@@ -83,10 +83,12 @@ Run all tests:
 
 Check coverage:
 
+Requires the `coverage` package.
+
 `make coverage`
 
 #### Generating documentation
 
-The documentation is generated from code using [pdoc3](https://pdoc3.github.io/pdoc/):
+Requires the `pdoc3` package.
 
 `make docs`
