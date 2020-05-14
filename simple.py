@@ -163,11 +163,13 @@ class SimpleSolver:
         text_length = len(text)
 
         # First, count the number of occurrences of each letter and save to the index
-        # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for "aa" etc.
+        # that corresponds to the letter pair based on where it is in the common key.
         num_digrams = 0
         for i in range(0, text_length - 1):
             char1 = text[i]
             char2 = text[i + 1]
+
+            # Only count true digrams, i.e. where both chars are actual letters.
             if char1 not in ascii_lowercase or char2 not in ascii_lowercase:
                 continue
             a = ascii_lowercase.index(char1)
