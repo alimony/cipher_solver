@@ -10,7 +10,7 @@ from consts import (
     STANDARD_ALPHABET_SIZE,
 )
 from simple import SimpleSolver
-from utils import alphabetical_to_common_key, common_to_alphabetical_key
+from utils import alphabetical_to_common_key, common_to_alphabetical_key, encrypt
 
 
 class SimpleSolverTestCase(unittest.TestCase):
@@ -27,12 +27,29 @@ class SimpleSolverTestCase(unittest.TestCase):
         )
 
         # Test conversion from common to alphabetical key.
-        for common_key, alpha_key in items:
-            self.assertEqual(alpha_key, common_to_alphabetical_key(common_key))
+        for common_key, alphabetical_key in items:
+            self.assertEqual(alphabetical_key, common_to_alphabetical_key(common_key))
 
         # Test conversion from alphabetical key to common key.
-        for common_key, alpha_key in items:
-            self.assertEqual(common_key, alphabetical_to_common_key(alpha_key))
+        for common_key, alphabetical_key in items:
+            self.assertEqual(common_key, alphabetical_to_common_key(alphabetical_key))
+
+        # Test encrypting from ciphertext and alphabetical key.
+        items = (
+            (
+                "I am already far north of London.",
+                "jhdxmuvpltbwnayzscrefqogik",
+                "L jn jwcmjxi ujc aycep yu Wyaxya.",
+            ),
+            (
+                "I am already far north of London.",
+                ascii_lowercase,
+                "I am already far north of London.",
+            ),
+        )
+
+        for plaintext, alphabetical_key, ciphertext in items:
+            self.assertEqual(encrypt(plaintext, alphabetical_key), ciphertext)
 
     def test_init(self):
         s = SimpleSolver("foo")

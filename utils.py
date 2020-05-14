@@ -1,4 +1,4 @@
-from string import ascii_lowercase
+from string import ascii_lowercase, ascii_uppercase
 
 from consts import ENGLISH_LETTERS_BY_FREQUENCY, STANDARD_ALPHABET_SIZE
 
@@ -51,3 +51,38 @@ def alphabetical_to_common_key(alphabetical_key):
     indices = [ascii_lowercase.index(letter) for letter in ENGLISH_LETTERS_BY_FREQUENCY]
 
     return "".join([alphabetical_key[index] for index in indices])
+
+
+def encrypt(plaintext, alphabetical_key):
+    """Create a ciphertext from the passed plaintext, using an alphabetical key.
+
+    Case and special chars are preserved.
+
+    Parameters
+    ----------
+    plaintext : str
+        The plaintext to encrypt.
+    alphabetical_key : str
+        The alphabetical key to use when creating the ciphertext.
+
+    Returns
+    -------
+    ciphertext : str
+        The encrypted text.
+    """
+
+    translation_table = {}
+
+    for plain_letter, key_letter in zip(ascii_lowercase, alphabetical_key):
+        translation_table[plain_letter] = key_letter
+
+    ciphertext = ""
+
+    for c in plaintext:
+        is_upper = c in ascii_uppercase
+        letter = translation_table.get(c.lower(), c)
+        if is_upper:
+            letter = letter.upper()
+        ciphertext += letter
+
+    return ciphertext
