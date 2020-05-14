@@ -179,8 +179,12 @@ class SimpleSolver:
         Raises
         ------
         ValueError
+            If the passed text is not a string.
             If the passed text does not contain at least one digram.
         &#34;&#34;&#34;
+
+        if not isinstance(text, str):
+            raise ValueError(f&#34;{text} is not a string.&#34;)
 
         if len(text) &lt; 2:
             raise ValueError(&#34;Text must contain at least one digram.&#34;)
@@ -413,7 +417,7 @@ class SimpleSolver:
             6d. If the score improved, save the putative digram matrix as the new best
                 digram matrix, make the same swap in the key, and save the improved
                 score as the new best score.
-        7. The algorithm is done when the score hasn&#39;t improved for 1,000 iterations.
+        7. The algorithm is done when the score hasn&#39;t improved for 2,000 iterations.
         &#34;&#34;&#34;
 
         # We need the key as a list so we can modify it in-place.
@@ -429,7 +433,7 @@ class SimpleSolver:
 
         # Loop and swap elements in the key at random until the score hasn&#39;t improved
         # for 1,000 iterations.
-        while iterations_since_last_improvement &lt; 1000:
+        while iterations_since_last_improvement &lt; 2000:
             a, b = self._weighted_random_index_pair()
 
             putative_digram_matrix = np.copy(digram_matrix)
@@ -446,14 +450,28 @@ class SimpleSolver:
 
         self._decryption_key = &#34;&#34;.join(key)
 
-    def solve(self):
+    def solve(self, method=&#34;random&#34;):
         &#34;&#34;&#34;Solve the cipher.
 
         Run the solver and save the resulting decryption key.
+
+        Parameters
+        ----------
+        method : str
+            The method to use when solving, currently &#34;random&#34; or &#34;deterministic&#34;.
+
+        Raises
+        ------
+        ValueError
+            If the passed method is unknown.
         &#34;&#34;&#34;
 
-        # We currently use the algorithm based on random key swaps.
-        self._solve_random()
+        if method == &#34;random&#34;:
+            self._solve_random()
+        elif method == &#34;deterministic&#34;:
+            self._solve_deterministic()
+        else:
+            raise ValueError(f&#34;Unknown method {method}&#34;)
 
     def plaintext(self):
         &#34;&#34;&#34;Return a plaintext using the current decryption key.
@@ -674,8 +692,12 @@ If the passed ciphertext is empty.</dd>
         Raises
         ------
         ValueError
+            If the passed text is not a string.
             If the passed text does not contain at least one digram.
         &#34;&#34;&#34;
+
+        if not isinstance(text, str):
+            raise ValueError(f&#34;{text} is not a string.&#34;)
 
         if len(text) &lt; 2:
             raise ValueError(&#34;Text must contain at least one digram.&#34;)
@@ -908,7 +930,7 @@ If the passed ciphertext is empty.</dd>
             6d. If the score improved, save the putative digram matrix as the new best
                 digram matrix, make the same swap in the key, and save the improved
                 score as the new best score.
-        7. The algorithm is done when the score hasn&#39;t improved for 1,000 iterations.
+        7. The algorithm is done when the score hasn&#39;t improved for 2,000 iterations.
         &#34;&#34;&#34;
 
         # We need the key as a list so we can modify it in-place.
@@ -924,7 +946,7 @@ If the passed ciphertext is empty.</dd>
 
         # Loop and swap elements in the key at random until the score hasn&#39;t improved
         # for 1,000 iterations.
-        while iterations_since_last_improvement &lt; 1000:
+        while iterations_since_last_improvement &lt; 2000:
             a, b = self._weighted_random_index_pair()
 
             putative_digram_matrix = np.copy(digram_matrix)
@@ -941,14 +963,28 @@ If the passed ciphertext is empty.</dd>
 
         self._decryption_key = &#34;&#34;.join(key)
 
-    def solve(self):
+    def solve(self, method=&#34;random&#34;):
         &#34;&#34;&#34;Solve the cipher.
 
         Run the solver and save the resulting decryption key.
+
+        Parameters
+        ----------
+        method : str
+            The method to use when solving, currently &#34;random&#34; or &#34;deterministic&#34;.
+
+        Raises
+        ------
+        ValueError
+            If the passed method is unknown.
         &#34;&#34;&#34;
 
-        # We currently use the algorithm based on random key swaps.
-        self._solve_random()
+        if method == &#34;random&#34;:
+            self._solve_random()
+        elif method == &#34;deterministic&#34;:
+            self._solve_deterministic()
+        else:
+            raise ValueError(f&#34;Unknown method {method}&#34;)
 
     def plaintext(self):
         &#34;&#34;&#34;Return a plaintext using the current decryption key.
@@ -983,23 +1019,47 @@ If the passed ciphertext is empty.</dd>
 <h3>Methods</h3>
 <dl>
 <dt id="markmag-ovn7.simple.SimpleSolver.solve"><code class="name flex">
-<span>def <span class="ident">solve</span></span>(<span>self)</span>
+<span>def <span class="ident">solve</span></span>(<span>self, method='random')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Solve the cipher.</p>
-<p>Run the solver and save the resulting decryption key.</p></div>
+<p>Run the solver and save the resulting decryption key.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>method</code></strong> :&ensp;<code>str</code></dt>
+<dd>The method to use when solving, currently "random" or "deterministic".</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the passed method is unknown.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def solve(self):
+<pre><code class="python">def solve(self, method=&#34;random&#34;):
     &#34;&#34;&#34;Solve the cipher.
 
     Run the solver and save the resulting decryption key.
+
+    Parameters
+    ----------
+    method : str
+        The method to use when solving, currently &#34;random&#34; or &#34;deterministic&#34;.
+
+    Raises
+    ------
+    ValueError
+        If the passed method is unknown.
     &#34;&#34;&#34;
 
-    # We currently use the algorithm based on random key swaps.
-    self._solve_random()</code></pre>
+    if method == &#34;random&#34;:
+        self._solve_random()
+    elif method == &#34;deterministic&#34;:
+        self._solve_deterministic()
+    else:
+        raise ValueError(f&#34;Unknown method {method}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="markmag-ovn7.simple.SimpleSolver.plaintext"><code class="name flex">

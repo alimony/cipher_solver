@@ -120,9 +120,11 @@ class SimpleSolverTestCase(unittest.TestCase):
         for ciphertext, common_letters in items:
             self.assertEqual(common_letters, s._get_common_letters(ciphertext))
 
+        items = (&#34;&#34;, [], None)
+
         for ciphertext in items:
             with self.assertRaises(ValueError):
-                s._get_initial_key(ciphertext)
+                s._get_common_letters(ciphertext)
 
     def test_get_digram_matrix(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -172,6 +174,12 @@ class SimpleSolverTestCase(unittest.TestCase):
             digram_frequencies = s._get_digram_matrix(text)
             rows, columns = digram_frequencies.shape
             self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
+
+        items = (&#34;a&#34;, &#34;&#34;, [], None)
+
+        for text in items:
+            with self.assertRaises(ValueError):
+                s._get_digram_matrix(text)
 
     def test_score(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -303,6 +311,13 @@ class SimpleSolverTestCase(unittest.TestCase):
 
         # Should return the decryption key in alphabetical form.
         self.assertEqual(s.decryption_key(), &#34;unsjecfiqvpybmgdwkxtaohrlz&#34;)
+
+        # Method doesn&#39;t exist.
+        with self.assertRaises(ValueError):
+            s.solve(method=&#34;foo&#34;)
+
+        # Use the original key swap method.
+        s.solve(method=&#34;deterministic&#34;)
 
     def test_matrix_key_swap(self):
         # The algorithm is based on the premise that if a digram matrix is created from
@@ -469,9 +484,11 @@ not have a method with the specified name.</p></div>
         for ciphertext, common_letters in items:
             self.assertEqual(common_letters, s._get_common_letters(ciphertext))
 
+        items = (&#34;&#34;, [], None)
+
         for ciphertext in items:
             with self.assertRaises(ValueError):
-                s._get_initial_key(ciphertext)
+                s._get_common_letters(ciphertext)
 
     def test_get_digram_matrix(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -521,6 +538,12 @@ not have a method with the specified name.</p></div>
             digram_frequencies = s._get_digram_matrix(text)
             rows, columns = digram_frequencies.shape
             self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
+
+        items = (&#34;a&#34;, &#34;&#34;, [], None)
+
+        for text in items:
+            with self.assertRaises(ValueError):
+                s._get_digram_matrix(text)
 
     def test_score(self):
         s = SimpleSolver(&#34;foo&#34;)
@@ -652,6 +675,13 @@ not have a method with the specified name.</p></div>
 
         # Should return the decryption key in alphabetical form.
         self.assertEqual(s.decryption_key(), &#34;unsjecfiqvpybmgdwkxtaohrlz&#34;)
+
+        # Method doesn&#39;t exist.
+        with self.assertRaises(ValueError):
+            s.solve(method=&#34;foo&#34;)
+
+        # Use the original key swap method.
+        s.solve(method=&#34;deterministic&#34;)
 
     def test_matrix_key_swap(self):
         # The algorithm is based on the premise that if a digram matrix is created from
@@ -825,9 +855,11 @@ not have a method with the specified name.</p></div>
     for ciphertext, common_letters in items:
         self.assertEqual(common_letters, s._get_common_letters(ciphertext))
 
+    items = (&#34;&#34;, [], None)
+
     for ciphertext in items:
         with self.assertRaises(ValueError):
-            s._get_initial_key(ciphertext)</code></pre>
+            s._get_common_letters(ciphertext)</code></pre>
 </details>
 </dd>
 <dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix"><code class="name flex">
@@ -886,7 +918,13 @@ not have a method with the specified name.</p></div>
     for text in items:
         digram_frequencies = s._get_digram_matrix(text)
         rows, columns = digram_frequencies.shape
-        self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))</code></pre>
+        self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
+
+    items = (&#34;a&#34;, &#34;&#34;, [], None)
+
+    for text in items:
+        with self.assertRaises(ValueError):
+            s._get_digram_matrix(text)</code></pre>
 </details>
 </dd>
 <dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_score"><code class="name flex">
@@ -1057,7 +1095,14 @@ not have a method with the specified name.</p></div>
     self.assertEqual(k, s._decryption_key)
 
     # Should return the decryption key in alphabetical form.
-    self.assertEqual(s.decryption_key(), &#34;unsjecfiqvpybmgdwkxtaohrlz&#34;)</code></pre>
+    self.assertEqual(s.decryption_key(), &#34;unsjecfiqvpybmgdwkxtaohrlz&#34;)
+
+    # Method doesn&#39;t exist.
+    with self.assertRaises(ValueError):
+        s.solve(method=&#34;foo&#34;)
+
+    # Use the original key swap method.
+    s.solve(method=&#34;deterministic&#34;)</code></pre>
 </details>
 </dd>
 <dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_matrix_key_swap"><code class="name flex">
