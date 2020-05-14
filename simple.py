@@ -420,14 +420,28 @@ class SimpleSolver:
 
         self._decryption_key = "".join(key)
 
-    def solve(self):
+    def solve(self, method="random"):
         """Solve the cipher.
 
         Run the solver and save the resulting decryption key.
+
+        Parameters
+        ----------
+        method : str
+            The method to use when solving, currently "random" or "deterministic".
+
+        Raises
+        ------
+        ValueError
+            If the passed method is unknown.
         """
 
-        # We currently use the algorithm based on random key swaps.
-        self._solve_random()
+        if method == "random":
+            self._solve_random()
+        elif method == "deterministic":
+            self._solve_deterministic()
+        else:
+            raise ValueError(f"Unknown method {method}")
 
     def plaintext(self):
         """Return a plaintext using the current decryption key.
