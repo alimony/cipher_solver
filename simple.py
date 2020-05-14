@@ -135,15 +135,13 @@ class SimpleSolver:
             [letter[0] for letter in c.most_common() if letter[0] in ascii_lowercase]
         )
 
-    def _get_digram_matrix(self, text, alphabet_size=STANDARD_ALPHABET_SIZE):
+    def _get_digram_matrix(self, text):
         """Generate digram matrix for the passed text.
 
         Parameters
         ----------
         text : str
             Text to generate digram frequency matrix for.
-        alphabet_size : int
-            The number of letters in the cipher alphabet, defaults to English length.
 
         Returns
         -------
@@ -153,21 +151,13 @@ class SimpleSolver:
         Raises
         ------
         ValueError
-            If the passed alphabet size is less than one
-            If the passed alphabet size is not an integer.
             If the passed text does not contain at least one digram.
         """
-
-        if not isinstance(alphabet_size, int):
-            raise ValueError("Alphabet size must be an integer.")
-
-        if alphabet_size < 1:
-            raise ValueError("Alphabet must contain at least one letter.")
 
         if len(text) < 2:
             raise ValueError("Text must contain at least one digram.")
 
-        digram_matrix = np.zeros((alphabet_size, alphabet_size))
+        digram_matrix = np.zeros((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
 
         text = text.lower()
         text_length = len(text)
