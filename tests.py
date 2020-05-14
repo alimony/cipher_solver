@@ -1,3 +1,4 @@
+import random
 import unittest
 from string import ascii_lowercase
 
@@ -97,7 +98,6 @@ class SimpleSolverTestCase(unittest.TestCase):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -107,6 +107,7 @@ class SimpleSolverTestCase(unittest.TestCase):
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # noqa
@@ -127,11 +128,7 @@ class SimpleSolverTestCase(unittest.TestCase):
         for text in items:
             digram_frequencies = s._get_digram_matrix(text)
             rows, columns = digram_frequencies.shape
-            for i in range(rows):
-                for j in range(columns):
-                    self.assertTrue(
-                        np.allclose(digram_frequencies, expected_frequencies)
-                    )
+            self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
 
     def test_score(self):
         s = SimpleSolver("foo")
@@ -260,3 +257,40 @@ class SimpleSolverTestCase(unittest.TestCase):
         # After resetting, the decryption key should be back to the default one.
         s.reset()
         self.assertEqual(k, s._decryption_key)
+
+    def test_matrix_key_swap(self):
+        # The algorithm is based on the premise that if a digram matrix is created from
+        # a plaintext using a certain key, swapping the letters at index (a, b) in that
+        # key and creating a new plaintext using the modified key, the digram matrix for
+        # that new plaintext will be identical to the first matrix but with the rows and
+        # columns at index (a, b) swapped. In other words, swapping rows and columns in
+        # the digram matrix is equivalent to swapping letters in the key. We need to
+        # test that this premise holds.
+
+        # We might as well test that this is true for all possible swaps.
+        for a in range(STANDARD_ALPHABET_SIZE):
+            for b in range(STANDARD_ALPHABET_SIZE):
+                if a == b:
+                    continue
+
+                ciphertext = "".join(random.choices(ascii_lowercase, k=100))
+
+                s = SimpleSolver(ciphertext)
+
+                plaintext1 = s.plaintext()
+                matrix1 = s._get_digram_matrix(plaintext1)
+
+                # First, swap rows and columns in the original matrix.
+                s._swap_matrix(matrix1, a, b)
+
+                # Then make the same swap in the key and generate a new matrix.
+                key = [c for c in s._decryption_key]
+                key[a], key[b] = key[b], key[a]
+                s._decryption_key = "".join(key)
+                plaintext2 = s.plaintext()
+                matrix2 = s._get_digram_matrix(plaintext2)
+
+                # We now have the original matrix where we swapped rows and columns,
+                # and the new matrix that was generated from plaintext using the key
+                # in which we swapped the letters at the same index.
+                self.assertTrue(np.allclose(matrix1, matrix2))
