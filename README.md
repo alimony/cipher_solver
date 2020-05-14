@@ -77,8 +77,6 @@ python solve.py texts/26_char_key/ciphertexts/ciphertext_frankenstein_sample.txt
 
 #### Running tests
 
-Run all tests:
-
 `make test`
 
 #### Check coverage
