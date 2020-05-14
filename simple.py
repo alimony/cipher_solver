@@ -394,7 +394,7 @@ class SimpleSolver:
                 if score < best_score:
                     # The score improved, so commit this change in both the digram
                     # matrix and the key.
-                    digram_matrix = d
+                    digram_matrix = np.copy(d)
                     key[j], key[j + i] = key[j + i], key[j]
                     best_score = score
 
