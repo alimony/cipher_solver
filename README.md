@@ -63,7 +63,7 @@ an example using an included sample text.
 #### CLI
 
 A simple command-line interface is included. To solve a cipher, put it into a text file
-using whatever alphabet is suitable, and run:
+and run:
 
 ```bash
 python solve.py <path_to_ciphertext_file>
