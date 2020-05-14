@@ -72,7 +72,7 @@ python solve.py <path_to_ciphertext_file>
 Example:
 
 ```bash
-python solve.py texts/26_char_key/ciphertexts/ciphertext_frankenstein_500chars.txt
+python solve.py texts/26_char_key/ciphertexts/ciphertext_frankenstein_sample.txt
 ```
 
 #### Running tests
