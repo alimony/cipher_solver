@@ -161,15 +161,13 @@ class SimpleSolver:
             [letter[0] for letter in c.most_common() if letter[0] in ascii_lowercase]
         )
 
-    def _get_digram_matrix(self, text, alphabet_size=STANDARD_ALPHABET_SIZE):
+    def _get_digram_matrix(self, text):
         &#34;&#34;&#34;Generate digram matrix for the passed text.
 
         Parameters
         ----------
         text : str
             Text to generate digram frequency matrix for.
-        alphabet_size : int
-            The number of letters in the cipher alphabet, defaults to English length.
 
         Returns
         -------
@@ -179,31 +177,25 @@ class SimpleSolver:
         Raises
         ------
         ValueError
-            If the passed alphabet size is less than one
-            If the passed alphabet size is not an integer.
             If the passed text does not contain at least one digram.
         &#34;&#34;&#34;
-
-        if not isinstance(alphabet_size, int):
-            raise ValueError(&#34;Alphabet size must be an integer.&#34;)
-
-        if alphabet_size &lt; 1:
-            raise ValueError(&#34;Alphabet must contain at least one letter.&#34;)
 
         if len(text) &lt; 2:
             raise ValueError(&#34;Text must contain at least one digram.&#34;)
 
-        digram_matrix = np.zeros((alphabet_size, alphabet_size))
+        digram_matrix = np.zeros((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
 
         text = text.lower()
         text_length = len(text)
 
         # First, count the number of occurrences of each letter and save to the index
-        # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for &#34;aa&#34; etc.
+        # that corresponds to the letter pair based on where it is in the common key.
         num_digrams = 0
         for i in range(0, text_length - 1):
             char1 = text[i]
             char2 = text[i + 1]
+
+            # Only count true digrams, i.e. where both chars are actual letters.
             if char1 not in ascii_lowercase or char2 not in ascii_lowercase:
                 continue
             a = ascii_lowercase.index(char1)
@@ -250,7 +242,7 @@ class SimpleSolver:
 
         return abs(matrix1 - matrix2).sum()
 
-    def _swap(self, matrix, index1, index2):
+    def _swap_matrix(self, matrix, index1, index2):
         &#34;&#34;&#34;Swap the matrix rows and columns at the given indices.
 
         Parameters
@@ -302,8 +294,7 @@ class SimpleSolver:
             raise ValueError(f&#34;Key must include all letters of the alphabet.&#34;)
 
         # The decryption key will be in order of most common first, so we need to
-        # construct a list of indices where to insert each to get an &#34;alphabetical key&#34;
-        # instead.
+        # construct a list of indices where to insert each to get an alphabetical key.
         indices = [
             ascii_lowercase.index(letter) for letter in ENGLISH_LETTERS_BY_FREQUENCY
         ]
@@ -421,14 +412,14 @@ class SimpleSolver:
             for j in range(STANDARD_ALPHABET_SIZE - i):
                 # Try a potential swap in the digram matrix.
                 d = np.copy(digram_matrix)
-                self._swap(d, j, j + i)
+                self._swap_matrix(d, j, j + i)
 
                 score = self._score(d)
 
                 if score &lt; best_score:
                     # The score improved, so commit this change in both the digram
                     # matrix and the key.
-                    digram_matrix = d
+                    digram_matrix = np.copy(d)
                     key[j], key[j + i] = key[j + i], key[j]
                     best_score = score
 
@@ -635,15 +626,13 @@ If the passed ciphertext is empty.</dd>
             [letter[0] for letter in c.most_common() if letter[0] in ascii_lowercase]
         )
 
-    def _get_digram_matrix(self, text, alphabet_size=STANDARD_ALPHABET_SIZE):
+    def _get_digram_matrix(self, text):
         &#34;&#34;&#34;Generate digram matrix for the passed text.
 
         Parameters
         ----------
         text : str
             Text to generate digram frequency matrix for.
-        alphabet_size : int
-            The number of letters in the cipher alphabet, defaults to English length.
 
         Returns
         -------
@@ -653,31 +642,25 @@ If the passed ciphertext is empty.</dd>
         Raises
         ------
         ValueError
-            If the passed alphabet size is less than one
-            If the passed alphabet size is not an integer.
             If the passed text does not contain at least one digram.
         &#34;&#34;&#34;
-
-        if not isinstance(alphabet_size, int):
-            raise ValueError(&#34;Alphabet size must be an integer.&#34;)
-
-        if alphabet_size &lt; 1:
-            raise ValueError(&#34;Alphabet must contain at least one letter.&#34;)
 
         if len(text) &lt; 2:
             raise ValueError(&#34;Text must contain at least one digram.&#34;)
 
-        digram_matrix = np.zeros((alphabet_size, alphabet_size))
+        digram_matrix = np.zeros((STANDARD_ALPHABET_SIZE, STANDARD_ALPHABET_SIZE))
 
         text = text.lower()
         text_length = len(text)
 
         # First, count the number of occurrences of each letter and save to the index
-        # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for &#34;aa&#34; etc.
+        # that corresponds to the letter pair based on where it is in the common key.
         num_digrams = 0
         for i in range(0, text_length - 1):
             char1 = text[i]
             char2 = text[i + 1]
+
+            # Only count true digrams, i.e. where both chars are actual letters.
             if char1 not in ascii_lowercase or char2 not in ascii_lowercase:
                 continue
             a = ascii_lowercase.index(char1)
@@ -724,7 +707,7 @@ If the passed ciphertext is empty.</dd>
 
         return abs(matrix1 - matrix2).sum()
 
-    def _swap(self, matrix, index1, index2):
+    def _swap_matrix(self, matrix, index1, index2):
         &#34;&#34;&#34;Swap the matrix rows and columns at the given indices.
 
         Parameters
@@ -776,8 +759,7 @@ If the passed ciphertext is empty.</dd>
             raise ValueError(f&#34;Key must include all letters of the alphabet.&#34;)
 
         # The decryption key will be in order of most common first, so we need to
-        # construct a list of indices where to insert each to get an &#34;alphabetical key&#34;
-        # instead.
+        # construct a list of indices where to insert each to get an alphabetical key.
         indices = [
             ascii_lowercase.index(letter) for letter in ENGLISH_LETTERS_BY_FREQUENCY
         ]
@@ -895,14 +877,14 @@ If the passed ciphertext is empty.</dd>
             for j in range(STANDARD_ALPHABET_SIZE - i):
                 # Try a potential swap in the digram matrix.
                 d = np.copy(digram_matrix)
-                self._swap(d, j, j + i)
+                self._swap_matrix(d, j, j + i)
 
                 score = self._score(d)
 
                 if score &lt; best_score:
                     # The score improved, so commit this change in both the digram
                     # matrix and the key.
-                    digram_matrix = d
+                    digram_matrix = np.copy(d)
                     key[j], key[j + i] = key[j + i], key[j]
                     best_score = score
 
