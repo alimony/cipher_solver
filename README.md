@@ -79,7 +79,7 @@ python solve.py texts/26_char_key/ciphertexts/ciphertext_frankenstein_sample.txt
 
 `make test`
 
-#### Check coverage
+#### Checking coverage
 
 `make coverage`
 
