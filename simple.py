@@ -268,8 +268,7 @@ class SimpleSolver:
             raise ValueError(f"Key must include all letters of the alphabet.")
 
         # The decryption key will be in order of most common first, so we need to
-        # construct a list of indices where to insert each to get an "alphabetical key"
-        # instead.
+        # construct a list of indices where to insert each to get an alphabetical key.
         indices = [
             ascii_lowercase.index(letter) for letter in ENGLISH_LETTERS_BY_FREQUENCY
         ]
