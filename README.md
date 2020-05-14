@@ -81,14 +81,14 @@ Run all tests:
 
 `make test`
 
-Check coverage:
-
-Requires the `coverage` package.
+#### Check coverage
 
 `make coverage`
 
+(Requires the `coverage` package.)
+
 #### Generating documentation
 
-Requires the `pdoc3` package.
-
 `make docs`
+
+(Requires the `pdoc3` package.)
