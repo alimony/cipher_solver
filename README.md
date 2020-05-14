@@ -47,9 +47,9 @@ See the [documentation](html/markmag-ovn7) for full description of methods and t
 from simple import SimpleSolver
 
 # Solve a cipher.
-h = SimpleSolver("uknkgmhksztkmexmpbxtgxesxe")
+h = SimpleSolver("U kn kgmhksz tkm exmpb xt Gxesxe.")
 h.solve()
-print(h.plaintext())  # "iamalreadyfarnorthoflondon"
+print(h.plaintext())  # "I am already far north of London."
 
 h.reset()  # Discard current solution to start over.
 h.solve()
