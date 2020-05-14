@@ -391,7 +391,7 @@ class SimpleSolver:
             6d. If the score improved, save the putative digram matrix as the new best
                 digram matrix, make the same swap in the key, and save the improved
                 score as the new best score.
-        7. The algorithm is done when the score hasn't improved for 1,000 iterations.
+        7. The algorithm is done when the score hasn't improved for 2,000 iterations.
         """
 
         # We need the key as a list so we can modify it in-place.
@@ -407,7 +407,7 @@ class SimpleSolver:
 
         # Loop and swap elements in the key at random until the score hasn't improved
         # for 1,000 iterations.
-        while iterations_since_last_improvement < 1000:
+        while iterations_since_last_improvement < 2000:
             a, b = self._weighted_random_index_pair()
 
             putative_digram_matrix = np.copy(digram_matrix)
