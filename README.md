@@ -47,13 +47,15 @@ See the [documentation](html/markmag-ovn7) for full description of methods and t
 from simple import SimpleSolver
 
 # Solve a cipher.
-h = SimpleSolver("U kn kgmhksz tkm exmpb xt Gxesxe.")
-h.solve()
-print(h.plaintext())  # "I am already far north of London."
+s = SimpleSolver("U kn kgmhksz tkm exmpb xt Gxesxe.")
+s.solve()
+print(s.plaintext())  # "I am already far north of London."
 
-h.reset()  # Discard current solution to start over.
-h.solve()
-print(h.plaintext())  # We have an alternative solution now.
+s.reset()  # Discard current solution to start over.
+s.solve()
+print(s.plaintext())  # We have an alternative solution now.
+
+print(s.decryption_key())  # "goaskbihxvrldepfwntmzqjucy"
 ```
 
 Note, however, that the above ciphertext is too short to give any meaningful results.
