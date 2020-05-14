@@ -153,8 +153,12 @@ class SimpleSolver:
         Raises
         ------
         ValueError
+            If the passed text is not a string.
             If the passed text does not contain at least one digram.
         """
+
+        if not isinstance(text, str):
+            raise ValueError(f"{text} is not a string.")
 
         if len(text) < 2:
             raise ValueError("Text must contain at least one digram.")
