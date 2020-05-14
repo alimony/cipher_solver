@@ -39,6 +39,13 @@ ENGLISH_LETTER_FREQUENCIES = {
 # The letters of the English alphabet sorted by frequency.
 ENGLISH_LETTERS_BY_FREQUENCY = "".join(ENGLISH_LETTER_FREQUENCIES.keys())
 
+# List of letter indices where number of occurrences is according to the corresponding
+# letter's frequency in English, used to generate random pairs for swapping.
+RANDOM_INDEX_DISTRIBUTION = []
+for letter, frequency in ENGLISH_LETTER_FREQUENCIES.items():
+    index = ENGLISH_LETTERS_BY_FREQUENCY.index(letter)
+    RANDOM_INDEX_DISTRIBUTION.extend([index] * int(10000 * frequency))
+
 # Source: http://norvig.com/mayzner.html
 # This is a (26 x 26) array containing the digram frequencies for the English language
 # and is used for scoring potential solutions. The rows and columns are sorted in order

@@ -1,11 +1,12 @@
+import random
 from collections import Counter
-from random import randint
 from string import ascii_lowercase, ascii_uppercase
 
 import numpy as np
 from consts import (
     DIGRAM_MATRIX_ENGLISH,
     ENGLISH_LETTERS_BY_FREQUENCY,
+    RANDOM_INDEX_DISTRIBUTION,
     STANDARD_ALPHABET_SIZE,
 )
 
@@ -293,84 +294,48 @@ class SimpleSolver:
 
         return plaintext
 
-    def _solve_naive(self):
-        """Solve cipher using the naive algorithm based on random key swaps.
+    def _weighted_random_index_pair(self):
+        """Return a random index pair for swapping, weighted by letter frequency.
 
-        This is the first algorithm described by Jakobsen. It is slow because a
-        plaintext has to be generated and a digram matrix calculated for each iteration.
+        Instead of just picking random indices between zero and the alphabet length,
+        which will suggest very unlikely swaps, the indices are randomised with a weight
+        according to English letter frequency. In other words, low indices
+        (corresponding to common letters) will be suggested more often than high indices
+        (corresponding to uncommon letters).
+
+        Returns
+        -------
+        index_pair : list
+            A pair of random indices between zero and the alphabet length.
+        """
+
+        return random.sample(RANDOM_INDEX_DISTRIBUTION, 2)
+
+    def _solve_deterministic(self):
+        """Solve the cipher using predefined, structured digram matrix swaps.
+
+        This is the algorithm described by Jakobsen. It is based on the insight that
+        swapping rows and columns in a digram matrix is equivalent to swapping the
+        elements at the same indices in the key that was used to generate the plaintext
+        that was used to generate the digram matrix.
+
         The algorithm works as follows:
 
         1. Create an initial key that is the ciphertext letters ordered by frequency.
         2. Generate a putative plaintext using this key.
-        3. Calculate a digram matrix from this plaintext.
-        4. Calculate a score from this digram matrix using the distance sum method.
-        5. Repeat the following steps:
-            6a. Make a copy of the key.
-            6b. Swap two elements at random in this putative key.
-            6c. After each swap, generate a putative plaintext, its digram matrix, and
-                the score of this putative digram matrix.
-            6d. If the score improved, save the modified key as the new best key, and
-                save the improved score as the new best score.
-        7. The algorithm is done when the score hasn't improved for 1,000 iterations.
-        """
-
-        # We need the key as a list so we can modify it in-place.
-        key = [c for c in self._decryption_key]
-
-        # Generate an initial digram matrix.
-        putative_plaintext = self._get_plaintext(key)
-        digram_matrix = self._get_digram_matrix(putative_plaintext)
-
-        best_score = self._score(digram_matrix)
-
-        iterations_since_last_improvement = 0
-
-        # Loop and swap elements in the key at random until the score hasn't improved
-        # for 1,000 iterations.
-        while iterations_since_last_improvement < 1000:
-            putative_key = key[:]
-
-            a = randint(0, 25)
-            b = randint(0, 25)
-            putative_key[a], putative_key[b] = putative_key[b], putative_key[a]
-
-            plaintext = self._get_plaintext(putative_key)
-            putative_digram_matrix = self._get_digram_matrix(plaintext)
-
-            score = self._score(putative_digram_matrix)
-
-            iterations_since_last_improvement += 1
-
-            if score < best_score:
-                best_score = score
-                key = putative_key[:]
-                iterations_since_last_improvement = 0
-
-        self._decryption_key = "".join(key)
-
-    def _solve_fast(self):
-        """Solve the cipher using the fast algorithm based on digram matrix swaps.
-
-        This is the second algorithm described by Jakobsen. It is based on the insight
-        that swapping rows and columns in a digram matrix is equivalent to swapping the
-        elements at the same indices in the key that was used to generate the plaintext
-        that was used to generate the digram matrix. The algorithm works as follows:
-
-        1. Create an initial key that is the ciphertext letters ordered by frequency.
-        2. Generate a putative plaintext using this key.
-        3. Calculate a digram matrix from this plaintext.
+        3. Generate a digram matrix from this plaintext.
         4. Calculate a score from this digram matrix using the distance sum method.
         5. Repeat the following steps:
             6a. Make a copy of the digram matrix.
-            6b. Swap rows/elements of the digram matrix at index (0, 1), (1, 2), (2, 3)
-                etc. until the last index of the pair reaches the alphabet length. Then
-                swap rows/columns at index (0, 2), (1, 3), (2, 4) etc. until the last
-                index in the pair reaches the alphabet length. The last swap in this
-                nested loop will be (0, 25).
+            6b. Swap rows/elements of this putative digram matrix at index (0, 1),
+                (1, 2), (2, 3) etc. until the last index of the pair reaches the
+                alphabet length. Then swap rows/columns at index (0, 2), (1, 3), (2, 4)
+                etc. until the last index in the pair reaches the alphabet length. The
+                last swap in this nested loop will be (0, 25).
             6c. After each swap, calculate a score from the modified digram matrix.
             6d. If the score improved, save the modified digram matrix as the new best
-                matrix, make the same swap in the key and save it as the new best key,
-                and save the improved score as the new best score.
+                digram matrix, make the same swap in the key and save it as the new best
+                key, and save the improved score as the new best score.
         7. The algorithm is done when all swaps have been made.
         """
 
@@ -402,14 +367,66 @@ class SimpleSolver:
 
         self._decryption_key = "".join(key)
 
+    def _solve_random(self):
+        """Solve the cipher using random key swaps.
+
+        This is the algorithm described by Jakobsen, but using random key swaps instead
+        of the original structured swaps according to a certain pattern.
+
+        The algorithm works as follows:
+
+        1. Create an initial key that is the ciphertext letters ordered by frequency.
+        2. Generate a putative plaintext using this key.
+        3. Generate a digram matrix from this plaintext.
+        4. Calculate a score from this digram matrix using the distance sum method.
+        5. Repeat the following steps:
+            6a. Make a copy of the digram matrix.
+            6b. Swap two rows/column at random in this putative digram matrix.
+            6c. Calculate a score for the putative digram matrix.
+            6d. If the score improved, save the putative digram matrix as the new best
+                digram matrix, make the same swap in the key, and save the improved
+                score as the new best score.
+        7. The algorithm is done when the score hasn't improved for 1,000 iterations.
+        """
+
+        # We need the key as a list so we can modify it in-place.
+        key = [c for c in self._decryption_key]
+
+        # Generate an initial digram matrix.
+        putative_plaintext = self._get_plaintext(key)
+        digram_matrix = self._get_digram_matrix(putative_plaintext)
+
+        best_score = self._score(digram_matrix)
+
+        iterations_since_last_improvement = 0
+
+        # Loop and swap elements in the key at random until the score hasn't improved
+        # for 1,000 iterations.
+        while iterations_since_last_improvement < 1000:
+            a, b = self._weighted_random_index_pair()
+
+            putative_digram_matrix = np.copy(digram_matrix)
+            self._swap_matrix(putative_digram_matrix, a, b)
+            score = self._score(putative_digram_matrix)
+
+            if score < best_score:
+                best_score = score
+                digram_matrix = np.copy(putative_digram_matrix)
+                key[a], key[b] = key[b], key[a]
+                iterations_since_last_improvement = 0
+            else:
+                iterations_since_last_improvement += 1
+
+        self._decryption_key = "".join(key)
+
     def solve(self):
         """Solve the cipher.
 
         Run the solver and save the resulting decryption key.
         """
 
-        # We currently use the slow, naive algorithm based on random key swaps.
-        self._solve_naive()
+        # We currently use the algorithm based on random key swaps.
+        self._solve_random()
 
     def plaintext(self):
         """Return a plaintext using the current decryption key.
