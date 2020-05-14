@@ -27,35 +27,21 @@
 <pre><code class="python">#!/usr/bin/env python
 # encoding: utf-8
 
-# solve.py [--type=simple] &lt;path_to_ciphertext_file&gt;
-
 import sys
 
 from simple import SimpleSolver
 
-SOLVERS = {
-    &#34;simple&#34;: SimpleSolver,
-}
-
 
 def main():
-    cipher_type = &#34;simple&#34;
+    if len(sys.argv) != 2:
+        sys.exit(&#34;Incorrect arguments. Usage: solve.py &lt;path_to_ciphertext_file&gt;&#34;)
 
-    for arg in sys.argv:
-        if &#34;--type&#34; in arg:
-            _, cipher_type = arg.split(&#34;=&#34;)
-
-    if cipher_type not in SOLVERS:
-        sys.exit(f&#39;Unknown cipher type &#34;{cipher_type}&#34;&#39;)
-
-    solver_class = SOLVERS[cipher_type]
-
-    input_file = sys.argv[-1]
+    input_file = sys.argv[1]
 
     with open(input_file) as f:
         ciphertext = f.read().strip()
 
-    s = solver_class(ciphertext)
+    s = SimpleSolver(ciphertext)
 
     print(f&#34;\nCiphertext:\n{ciphertext}&#34;)
 
@@ -85,23 +71,15 @@ if __name__ == &#34;__main__&#34;:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def main():
-    cipher_type = &#34;simple&#34;
+    if len(sys.argv) != 2:
+        sys.exit(&#34;Incorrect arguments. Usage: solve.py &lt;path_to_ciphertext_file&gt;&#34;)
 
-    for arg in sys.argv:
-        if &#34;--type&#34; in arg:
-            _, cipher_type = arg.split(&#34;=&#34;)
-
-    if cipher_type not in SOLVERS:
-        sys.exit(f&#39;Unknown cipher type &#34;{cipher_type}&#34;&#39;)
-
-    solver_class = SOLVERS[cipher_type]
-
-    input_file = sys.argv[-1]
+    input_file = sys.argv[1]
 
     with open(input_file) as f:
         ciphertext = f.read().strip()
 
-    s = solver_class(ciphertext)
+    s = SimpleSolver(ciphertext)
 
     print(f&#34;\nCiphertext:\n{ciphertext}&#34;)
 

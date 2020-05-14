@@ -26,7 +26,7 @@
 </summary>
 <pre><code class="python">from collections import Counter
 from random import randint
-from string import ascii_lowercase
+from string import ascii_lowercase, ascii_uppercase
 
 import numpy as np
 from consts import (
@@ -55,6 +55,7 @@ class SimpleSolver:
                       created from a given text, where the frequency of each digram
                       relative to the text length is saved to the corresponding index
                       pair, e.g. (0, 0) for &#34;aa&#34;, (0, 1) for &#34;ab&#34; etc.
+    &#34;distance sum&#34; : The method used to score solutions, see ._score() for details.
     &#34;&#34;&#34;
 
     def __init__(self, ciphertext):
@@ -89,7 +90,7 @@ class SimpleSolver:
         # English alphabet which is the common way to express decryption keys.
         self._decryption_key = self._get_initial_key(ciphertext)
 
-        self._ciphertext = ciphertext.lower()
+        self._ciphertext = ciphertext
 
     def _get_initial_key(self, ciphertext):
         &#34;&#34;&#34;Construct the initial decryption key.
@@ -199,6 +200,7 @@ class SimpleSolver:
 
         # First, count the number of occurrences of each letter and save to the index
         # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for &#34;aa&#34; etc.
+        num_digrams = 0
         for i in range(0, text_length - 1):
             char1 = text[i]
             char2 = text[i + 1]
@@ -207,14 +209,15 @@ class SimpleSolver:
             a = ascii_lowercase.index(char1)
             b = ascii_lowercase.index(char2)
             digram_matrix[a, b] += 1
+            num_digrams += 1
 
-        # Replace each entry with a percentage of the total text length, to get the same
-        # format as the English digram matrix.
+        # Replace each entry with a percentage of the total number of digrams, to get
+        # the same format as the English digram matrix.
         rows, columns = digram_matrix.shape
         for i in range(rows):
             for j in range(columns):
                 # All digram frequencies are in percentages, so convert it here too.
-                digram_matrix[i, j] = 100 * digram_matrix[i, j] / text_length
+                digram_matrix[i, j] = 100 * digram_matrix[i, j] / num_digrams
 
         return digram_matrix
 
@@ -311,7 +314,16 @@ class SimpleSolver:
             plain_letter = ascii_lowercase[index]
             translation_table[key_letter] = plain_letter
 
-        return &#34;&#34;.join([translation_table.get(c, c) for c in self._ciphertext])
+        plaintext = &#34;&#34;
+
+        for c in self._ciphertext:
+            is_upper = c in ascii_uppercase
+            letter = translation_table.get(c.lower(), c)
+            if is_upper:
+                letter = letter.upper()
+            plaintext += letter
+
+        return plaintext
 
     def _solve_naive(self):
         &#34;&#34;&#34;Solve cipher using the naive algorithm based on random key swaps.
@@ -479,7 +491,8 @@ The details of the algorithm is described in the solve method docstrings.</p>
 "digram matrix" : An (n x n) matrix, where n is the length of the used alphabet,
 created from a given text, where the frequency of each digram
 relative to the text length is saved to the corresponding index
-pair, e.g. (0, 0) for "aa", (0, 1) for "ab" etc.</p>
+pair, e.g. (0, 0) for "aa", (0, 1) for "ab" etc.
+"distance sum" : The method used to score solutions, see ._score() for details.</p>
 <p>Create new solver.</p>
 <p>Creates a new cipher solver from an initial ciphertext.</p>
 <h2 id="parameters">Parameters</h2>
@@ -516,6 +529,7 @@ If the passed ciphertext is empty.</dd>
                       created from a given text, where the frequency of each digram
                       relative to the text length is saved to the corresponding index
                       pair, e.g. (0, 0) for &#34;aa&#34;, (0, 1) for &#34;ab&#34; etc.
+    &#34;distance sum&#34; : The method used to score solutions, see ._score() for details.
     &#34;&#34;&#34;
 
     def __init__(self, ciphertext):
@@ -550,7 +564,7 @@ If the passed ciphertext is empty.</dd>
         # English alphabet which is the common way to express decryption keys.
         self._decryption_key = self._get_initial_key(ciphertext)
 
-        self._ciphertext = ciphertext.lower()
+        self._ciphertext = ciphertext
 
     def _get_initial_key(self, ciphertext):
         &#34;&#34;&#34;Construct the initial decryption key.
@@ -660,6 +674,7 @@ If the passed ciphertext is empty.</dd>
 
         # First, count the number of occurrences of each letter and save to the index
         # that corresponds to the letter pair, i.e. digram_matrix[0, 0] is for &#34;aa&#34; etc.
+        num_digrams = 0
         for i in range(0, text_length - 1):
             char1 = text[i]
             char2 = text[i + 1]
@@ -668,14 +683,15 @@ If the passed ciphertext is empty.</dd>
             a = ascii_lowercase.index(char1)
             b = ascii_lowercase.index(char2)
             digram_matrix[a, b] += 1
+            num_digrams += 1
 
-        # Replace each entry with a percentage of the total text length, to get the same
-        # format as the English digram matrix.
+        # Replace each entry with a percentage of the total number of digrams, to get
+        # the same format as the English digram matrix.
         rows, columns = digram_matrix.shape
         for i in range(rows):
             for j in range(columns):
                 # All digram frequencies are in percentages, so convert it here too.
-                digram_matrix[i, j] = 100 * digram_matrix[i, j] / text_length
+                digram_matrix[i, j] = 100 * digram_matrix[i, j] / num_digrams
 
         return digram_matrix
 
@@ -772,7 +788,16 @@ If the passed ciphertext is empty.</dd>
             plain_letter = ascii_lowercase[index]
             translation_table[key_letter] = plain_letter
 
-        return &#34;&#34;.join([translation_table.get(c, c) for c in self._ciphertext])
+        plaintext = &#34;&#34;
+
+        for c in self._ciphertext:
+            is_upper = c in ascii_uppercase
+            letter = translation_table.get(c.lower(), c)
+            if is_upper:
+                letter = letter.upper()
+            plaintext += letter
+
+        return plaintext
 
     def _solve_naive(self):
         &#34;&#34;&#34;Solve cipher using the naive algorithm based on random key swaps.

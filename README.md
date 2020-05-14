@@ -66,7 +66,7 @@ A simple command-line interface is included. To solve a cipher, put it into a te
 using whatever alphabet is suitable, and run:
 
 ```bash
-python solve.py [--type=simple] <path_to_ciphertext_file>
+python solve.py <path_to_ciphertext_file>
 ```
 
 Example:
