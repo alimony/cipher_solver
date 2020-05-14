@@ -94,9 +94,11 @@ class SimpleSolverTestCase(unittest.TestCase):
         for ciphertext, common_letters in items:
             self.assertEqual(common_letters, s._get_common_letters(ciphertext))
 
+        items = ("", [], None)
+
         for ciphertext in items:
             with self.assertRaises(ValueError):
-                s._get_initial_key(ciphertext)
+                s._get_common_letters(ciphertext)
 
     def test_get_digram_matrix(self):
         s = SimpleSolver("foo")
@@ -146,6 +148,12 @@ class SimpleSolverTestCase(unittest.TestCase):
             digram_frequencies = s._get_digram_matrix(text)
             rows, columns = digram_frequencies.shape
             self.assertTrue(np.allclose(digram_frequencies, expected_frequencies))
+
+        items = ("a", "", [], None)
+
+        for text in items:
+            with self.assertRaises(ValueError):
+                s._get_digram_matrix(text)
 
     def test_score(self):
         s = SimpleSolver("foo")
@@ -277,6 +285,13 @@ class SimpleSolverTestCase(unittest.TestCase):
 
         # Should return the decryption key in alphabetical form.
         self.assertEqual(s.decryption_key(), "unsjecfiqvpybmgdwkxtaohrlz")
+
+        # Method doesn't exist.
+        with self.assertRaises(ValueError):
+            s.solve(method="foo")
+
+        # Use the original key swap method.
+        s.solve(method="deterministic")
 
     def test_matrix_key_swap(self):
         # The algorithm is based on the premise that if a digram matrix is created from
