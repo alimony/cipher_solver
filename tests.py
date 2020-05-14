@@ -132,16 +132,6 @@ class SimpleSolverTestCase(unittest.TestCase):
                         np.allclose(digram_frequencies, expected_frequencies)
                     )
 
-        items = (
-            ("foo", "bar"),
-            ("foo", 0),
-            ("f", 0),
-        )
-
-        for text, alphabet_size in items:
-            with self.assertRaises(ValueError):
-                s._get_digram_matrix(text, alphabet_size)
-
     def test_score(self):
         s = SimpleSolver("foo")
 
