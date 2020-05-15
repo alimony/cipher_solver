@@ -57,13 +57,11 @@ class SimpleSolver:
         if len(ciphertext) < 1:
             raise ValueError("Ciphertext cannot be empty.")
 
-        # The decryption key is a string of letters that determines how the ciphertext
-        # is converted to plaintext. The key is equal in length to the English alphabet
-        # and is assumed to be in frequency order. In other words, the first letter is
-        # the letter in the ciphertext that should be translated to an "e", the second
-        # which one should be converted to a "t", and so on. When generating plaintext
-        # this key will be converted to an alphabetical one that matches the order of
-        # English alphabet which is the common way to express decryption keys.
+        # The decryption key is a list of letters that determines how the ciphertext is
+        # converted to plaintext. The key is equal in length to the English alphabet and
+        # is assumed to be in frequency order. In other words, the first letter is the
+        # letter in the ciphertext that should be translated to an "e", the second
+        # which one should be converted to a "t", and so on.
         self._decryption_key = self._get_initial_key(ciphertext)
 
         self._ciphertext = ciphertext
