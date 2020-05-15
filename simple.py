@@ -263,7 +263,7 @@ class SimpleSolver:
         Returns
         -------
         plaintext : str
-            Plaintext from decrypting the ciphertext using the current decryption key.
+            Plaintext from decrypting the ciphertext using the passed decryption key.
 
         Raises
         ------
