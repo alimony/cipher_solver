@@ -54,7 +54,7 @@ class SimpleSolverTestCase(unittest.TestCase):
     def test_init(self):
         s = SimpleSolver("foo")
 
-        self.assertEqual(s._decryption_key, "ofabcdeghijklmnpqrstuvwxyz")
+        self.assertEqual(s._decryption_key, list("ofabcdeghijklmnpqrstuvwxyz"))
         self.assertEqual(s._ciphertext, "foo")
 
         items = ("", [], None)
@@ -65,11 +65,11 @@ class SimpleSolverTestCase(unittest.TestCase):
 
     def test_get_initial_key(self):
         items = (
-            ("aaabbc", "abcdefghijklmnopqrstuvwxyz"),
-            ("aabbcc", "abcdefghijklmnopqrstuvwxyz"),
-            ("abbccc", "cbadefghijklmnopqrstuvwxyz"),
-            (ascii_lowercase, "abcdefghijklmnopqrstuvwxyz"),
-            ("oegefotneeahtvawwlgtnecahtwe", "etawognhfvlcbdijkmpqrsuxyz"),
+            ("aaabbc", list("abcdefghijklmnopqrstuvwxyz")),
+            ("aabbcc", list("abcdefghijklmnopqrstuvwxyz")),
+            ("abbccc", list("cbadefghijklmnopqrstuvwxyz")),
+            (ascii_lowercase, list("abcdefghijklmnopqrstuvwxyz")),
+            ("oegefotneeahtvawwlgtnecahtwe", list("etawognhfvlcbdijkmpqrsuxyz")),
         )
 
         for ciphertext, expected_initial_key in items:
@@ -86,9 +86,9 @@ class SimpleSolverTestCase(unittest.TestCase):
         s = SimpleSolver("foo")
 
         items = (
-            ("aaabbc", "abc"),
-            ("cccccbbbaaaad", "cabd"),
-            ("aaaaaaaaaaaaaaaa", "a"),
+            ("aaabbc", list("abc")),
+            ("cccccbbbaaaad", list("cabd")),
+            ("aaaaaaaaaaaaaaaa", ["a"]),
         )
 
         for ciphertext, common_letters in items:

@@ -81,7 +81,7 @@ class SimpleSolver:
 
         Returns
         -------
-        decryption_key : str
+        decryption_key : list
             The initial decryption key.
 
         Raises
@@ -103,7 +103,7 @@ class SimpleSolver:
             if c not in decryption_key:
                 decryption_key += c
 
-        return "".join(decryption_key)
+        return decryption_key
 
     def _get_common_letters(self, text):
         """Get all unique letters of the passed text, sorted by frequency.
@@ -115,7 +115,7 @@ class SimpleSolver:
 
         Returns
         -------
-        common_letters : str
+        common_letters : list
             The letters of the text ordered by frequency.
 
         Raises
@@ -131,9 +131,7 @@ class SimpleSolver:
             raise ValueError("Text must not be empty.")
 
         c = Counter(text)
-        return "".join(
-            [letter[0] for letter in c.most_common() if letter[0] in ascii_lowercase]
-        )
+        return [letter[0] for letter in c.most_common() if letter[0] in ascii_lowercase]
 
     def _get_digram_matrix(self, text):
         """Generate digram matrix for the passed text.
@@ -257,7 +255,7 @@ class SimpleSolver:
 
         Parameters
         ----------
-        decryption_key : str
+        decryption_key : list
             The decryption key to use for generating the plaintext.
 
         Returns
@@ -343,7 +341,7 @@ class SimpleSolver:
         """
 
         # We need this as a list so we can modify it in-place.
-        key = [c for c in self._decryption_key]
+        key = self._decryption_key[:]
 
         # Generate digram matrix from the corresponding plaintext.
         putative_plaintext = self._get_plaintext(key)
@@ -368,7 +366,7 @@ class SimpleSolver:
                     key[j], key[j + i] = key[j + i], key[j]
                     best_score = score
 
-        self._decryption_key = "".join(key)
+        self._decryption_key = key[:]
 
     def _solve_random(self):
         """Solve the cipher using random key swaps.
@@ -393,7 +391,7 @@ class SimpleSolver:
         """
 
         # We need the key as a list so we can modify it in-place.
-        key = [c for c in self._decryption_key]
+        key = self._decryption_key[:]
 
         # Generate an initial digram matrix.
         putative_plaintext = self._get_plaintext(key)
@@ -420,7 +418,7 @@ class SimpleSolver:
             else:
                 iterations_since_last_improvement += 1
 
-        self._decryption_key = "".join(key)
+        self._decryption_key = key[:]
 
     def solve(self, method="random"):
         """Solve the cipher.
@@ -462,7 +460,7 @@ class SimpleSolver:
         Returns
         -------
         alphabetical_key : str
-            The current decryption key in alphabetical form.
+            The current decryption key as a string in alphabetical form.
         """
 
         return common_to_alphabetical_key(self._decryption_key)
