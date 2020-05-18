@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>markmag-ovn7.solve API documentation</title>
+<title>cipher_solver API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,78 +17,38 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>markmag-ovn7.solve</code></h1>
+<h1 class="title">Namespace <code>cipher_solver</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">#!/usr/bin/env python
-# encoding: utf-8
-
-import sys
-
-from simple import SimpleSolver
-
-
-def main():
-    if len(sys.argv) != 2:
-        sys.exit(&#34;Incorrect arguments. Usage: solve.py &lt;path_to_ciphertext_file&gt;&#34;)
-
-    input_file = sys.argv[1]
-
-    with open(input_file) as f:
-        ciphertext = f.read().strip()
-
-    s = SimpleSolver(ciphertext)
-
-    print(f&#34;\nCiphertext:\n{ciphertext}&#34;)
-
-    s.solve()
-
-    print(f&#34;\nPlaintext:\n{s.plaintext()}\n&#34;)
-
-
-if __name__ == &#34;__main__&#34;:
-    main()</code></pre>
-</details>
 </section>
 <section>
-</section>
-<section>
-</section>
-<section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt id="markmag-ovn7.solve.main"><code class="name flex">
-<span>def <span class="ident">main</span></span>(<span>)</span>
-</code></dt>
+<dt><code class="name"><a title="cipher_solver.consts" href="consts.html">cipher_solver.consts</a></code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def main():
-    if len(sys.argv) != 2:
-        sys.exit(&#34;Incorrect arguments. Usage: solve.py &lt;path_to_ciphertext_file&gt;&#34;)
-
-    input_file = sys.argv[1]
-
-    with open(input_file) as f:
-        ciphertext = f.read().strip()
-
-    s = SimpleSolver(ciphertext)
-
-    print(f&#34;\nCiphertext:\n{ciphertext}&#34;)
-
-    s.solve()
-
-    print(f&#34;\nPlaintext:\n{s.plaintext()}\n&#34;)</code></pre>
-</details>
+</dd>
+<dt><code class="name"><a title="cipher_solver.simple" href="simple.html">cipher_solver.simple</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="cipher_solver.solve" href="solve.html">cipher_solver.solve</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="cipher_solver.tests" href="tests.html">cipher_solver.tests</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="cipher_solver.utils" href="utils.html">cipher_solver.utils</a></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
+</section>
+<section>
+</section>
+<section>
 </section>
 <section>
 </section>
@@ -99,14 +59,13 @@ if __name__ == &#34;__main__&#34;:
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3>Super-module</h3>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="markmag-ovn7" href="index.html">markmag-ovn7</a></code></li>
-</ul>
-</li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="markmag-ovn7.solve.main" href="#markmag-ovn7.solve.main">main</a></code></li>
+<li><code><a title="cipher_solver.consts" href="consts.html">cipher_solver.consts</a></code></li>
+<li><code><a title="cipher_solver.simple" href="simple.html">cipher_solver.simple</a></code></li>
+<li><code><a title="cipher_solver.solve" href="solve.html">cipher_solver.solve</a></code></li>
+<li><code><a title="cipher_solver.tests" href="tests.html">cipher_solver.tests</a></code></li>
+<li><code><a title="cipher_solver.utils" href="utils.html">cipher_solver.utils</a></code></li>
 </ul>
 </li>
 </ul>

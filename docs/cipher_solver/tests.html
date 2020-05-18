@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>markmag-ovn7.tests API documentation</title>
+<title>cipher_solver.tests API documentation</title>
 <meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>markmag-ovn7.tests</code></h1>
+<h1 class="title">Module <code>cipher_solver.tests</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -80,7 +80,7 @@ class SimpleSolverTestCase(unittest.TestCase):
     def test_init(self):
         s = SimpleSolver(&#34;foo&#34;)
 
-        self.assertEqual(s._decryption_key, &#34;ofabcdeghijklmnpqrstuvwxyz&#34;)
+        self.assertEqual(s._decryption_key, list(&#34;ofabcdeghijklmnpqrstuvwxyz&#34;))
         self.assertEqual(s._ciphertext, &#34;foo&#34;)
 
         items = (&#34;&#34;, [], None)
@@ -91,11 +91,11 @@ class SimpleSolverTestCase(unittest.TestCase):
 
     def test_get_initial_key(self):
         items = (
-            (&#34;aaabbc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
-            (&#34;aabbcc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
-            (&#34;abbccc&#34;, &#34;cbadefghijklmnopqrstuvwxyz&#34;),
-            (ascii_lowercase, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
-            (&#34;oegefotneeahtvawwlgtnecahtwe&#34;, &#34;etawognhfvlcbdijkmpqrsuxyz&#34;),
+            (&#34;aaabbc&#34;, list(&#34;abcdefghijklmnopqrstuvwxyz&#34;)),
+            (&#34;aabbcc&#34;, list(&#34;abcdefghijklmnopqrstuvwxyz&#34;)),
+            (&#34;abbccc&#34;, list(&#34;cbadefghijklmnopqrstuvwxyz&#34;)),
+            (ascii_lowercase, list(&#34;abcdefghijklmnopqrstuvwxyz&#34;)),
+            (&#34;oegefotneeahtvawwlgtnecahtwe&#34;, list(&#34;etawognhfvlcbdijkmpqrsuxyz&#34;)),
         )
 
         for ciphertext, expected_initial_key in items:
@@ -112,9 +112,9 @@ class SimpleSolverTestCase(unittest.TestCase):
         s = SimpleSolver(&#34;foo&#34;)
 
         items = (
-            (&#34;aaabbc&#34;, &#34;abc&#34;),
-            (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
-            (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
+            (&#34;aaabbc&#34;, list(&#34;abc&#34;)),
+            (&#34;cccccbbbaaaad&#34;, list(&#34;cabd&#34;)),
+            (&#34;aaaaaaaaaaaaaaaa&#34;, [&#34;a&#34;]),
         )
 
         for ciphertext, common_letters in items:
@@ -366,7 +366,7 @@ class SimpleSolverTestCase(unittest.TestCase):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase"><code class="flex name class">
+<dt id="cipher_solver.tests.SimpleSolverTestCase"><code class="flex name class">
 <span>class <span class="ident">SimpleSolverTestCase</span></span>
 <span>(</span><span>methodName='runTest')</span>
 </code></dt>
@@ -444,7 +444,7 @@ not have a method with the specified name.</p></div>
     def test_init(self):
         s = SimpleSolver(&#34;foo&#34;)
 
-        self.assertEqual(s._decryption_key, &#34;ofabcdeghijklmnpqrstuvwxyz&#34;)
+        self.assertEqual(s._decryption_key, list(&#34;ofabcdeghijklmnpqrstuvwxyz&#34;))
         self.assertEqual(s._ciphertext, &#34;foo&#34;)
 
         items = (&#34;&#34;, [], None)
@@ -455,11 +455,11 @@ not have a method with the specified name.</p></div>
 
     def test_get_initial_key(self):
         items = (
-            (&#34;aaabbc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
-            (&#34;aabbcc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
-            (&#34;abbccc&#34;, &#34;cbadefghijklmnopqrstuvwxyz&#34;),
-            (ascii_lowercase, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
-            (&#34;oegefotneeahtvawwlgtnecahtwe&#34;, &#34;etawognhfvlcbdijkmpqrsuxyz&#34;),
+            (&#34;aaabbc&#34;, list(&#34;abcdefghijklmnopqrstuvwxyz&#34;)),
+            (&#34;aabbcc&#34;, list(&#34;abcdefghijklmnopqrstuvwxyz&#34;)),
+            (&#34;abbccc&#34;, list(&#34;cbadefghijklmnopqrstuvwxyz&#34;)),
+            (ascii_lowercase, list(&#34;abcdefghijklmnopqrstuvwxyz&#34;)),
+            (&#34;oegefotneeahtvawwlgtnecahtwe&#34;, list(&#34;etawognhfvlcbdijkmpqrsuxyz&#34;)),
         )
 
         for ciphertext, expected_initial_key in items:
@@ -476,9 +476,9 @@ not have a method with the specified name.</p></div>
         s = SimpleSolver(&#34;foo&#34;)
 
         items = (
-            (&#34;aaabbc&#34;, &#34;abc&#34;),
-            (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
-            (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
+            (&#34;aaabbc&#34;, list(&#34;abc&#34;)),
+            (&#34;cccccbbbaaaad&#34;, list(&#34;cabd&#34;)),
+            (&#34;aaaaaaaaaaaaaaaa&#34;, [&#34;a&#34;]),
         )
 
         for ciphertext, common_letters in items:
@@ -726,7 +726,7 @@ not have a method with the specified name.</p></div>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_constants"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_constants"><code class="name flex">
 <span>def <span class="ident">test_constants</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -742,7 +742,7 @@ not have a method with the specified name.</p></div>
     self.assertEqual(len(ENGLISH_LETTERS_BY_FREQUENCY), STANDARD_ALPHABET_SIZE)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_utils"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_utils"><code class="name flex">
 <span>def <span class="ident">test_utils</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -783,7 +783,7 @@ not have a method with the specified name.</p></div>
         self.assertEqual(encrypt(plaintext, alphabetical_key), ciphertext)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_init"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_init"><code class="name flex">
 <span>def <span class="ident">test_init</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -795,7 +795,7 @@ not have a method with the specified name.</p></div>
 <pre><code class="python">def test_init(self):
     s = SimpleSolver(&#34;foo&#34;)
 
-    self.assertEqual(s._decryption_key, &#34;ofabcdeghijklmnpqrstuvwxyz&#34;)
+    self.assertEqual(s._decryption_key, list(&#34;ofabcdeghijklmnpqrstuvwxyz&#34;))
     self.assertEqual(s._ciphertext, &#34;foo&#34;)
 
     items = (&#34;&#34;, [], None)
@@ -805,7 +805,7 @@ not have a method with the specified name.</p></div>
             s = SimpleSolver(arg)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_initial_key"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_get_initial_key"><code class="name flex">
 <span>def <span class="ident">test_get_initial_key</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -816,11 +816,11 @@ not have a method with the specified name.</p></div>
 </summary>
 <pre><code class="python">def test_get_initial_key(self):
     items = (
-        (&#34;aaabbc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
-        (&#34;aabbcc&#34;, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
-        (&#34;abbccc&#34;, &#34;cbadefghijklmnopqrstuvwxyz&#34;),
-        (ascii_lowercase, &#34;abcdefghijklmnopqrstuvwxyz&#34;),
-        (&#34;oegefotneeahtvawwlgtnecahtwe&#34;, &#34;etawognhfvlcbdijkmpqrsuxyz&#34;),
+        (&#34;aaabbc&#34;, list(&#34;abcdefghijklmnopqrstuvwxyz&#34;)),
+        (&#34;aabbcc&#34;, list(&#34;abcdefghijklmnopqrstuvwxyz&#34;)),
+        (&#34;abbccc&#34;, list(&#34;cbadefghijklmnopqrstuvwxyz&#34;)),
+        (ascii_lowercase, list(&#34;abcdefghijklmnopqrstuvwxyz&#34;)),
+        (&#34;oegefotneeahtvawwlgtnecahtwe&#34;, list(&#34;etawognhfvlcbdijkmpqrsuxyz&#34;)),
     )
 
     for ciphertext, expected_initial_key in items:
@@ -834,7 +834,7 @@ not have a method with the specified name.</p></div>
             s._get_initial_key(ciphertext)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_get_common_letters"><code class="name flex">
 <span>def <span class="ident">test_get_common_letters</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -847,9 +847,9 @@ not have a method with the specified name.</p></div>
     s = SimpleSolver(&#34;foo&#34;)
 
     items = (
-        (&#34;aaabbc&#34;, &#34;abc&#34;),
-        (&#34;cccccbbbaaaad&#34;, &#34;cabd&#34;),
-        (&#34;aaaaaaaaaaaaaaaa&#34;, &#34;a&#34;),
+        (&#34;aaabbc&#34;, list(&#34;abc&#34;)),
+        (&#34;cccccbbbaaaad&#34;, list(&#34;cabd&#34;)),
+        (&#34;aaaaaaaaaaaaaaaa&#34;, [&#34;a&#34;]),
     )
 
     for ciphertext, common_letters in items:
@@ -862,7 +862,7 @@ not have a method with the specified name.</p></div>
             s._get_common_letters(ciphertext)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_get_digram_matrix"><code class="name flex">
 <span>def <span class="ident">test_get_digram_matrix</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -927,7 +927,7 @@ not have a method with the specified name.</p></div>
             s._get_digram_matrix(text)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_score"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_score"><code class="name flex">
 <span>def <span class="ident">test_score</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -965,7 +965,7 @@ not have a method with the specified name.</p></div>
         s._score(np.array([1, 2]), np.array([1, 2, 3]))</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_swap_matrix"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_swap_matrix"><code class="name flex">
 <span>def <span class="ident">test_swap_matrix</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1025,7 +1025,7 @@ not have a method with the specified name.</p></div>
             s._swap_matrix(matrix, 0, 2)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_get_plaintext"><code class="name flex">
 <span>def <span class="ident">test_get_plaintext</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1070,7 +1070,7 @@ not have a method with the specified name.</p></div>
         s._get_plaintext(ascii_lowercase[1:])</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_public_api"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_public_api"><code class="name flex">
 <span>def <span class="ident">test_public_api</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1105,7 +1105,7 @@ not have a method with the specified name.</p></div>
     s.solve(method=&#34;deterministic&#34;)</code></pre>
 </details>
 </dd>
-<dt id="markmag-ovn7.tests.SimpleSolverTestCase.test_matrix_key_swap"><code class="name flex">
+<dt id="cipher_solver.tests.SimpleSolverTestCase.test_matrix_key_swap"><code class="name flex">
 <span>def <span class="ident">test_matrix_key_swap</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1165,25 +1165,25 @@ not have a method with the specified name.</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="markmag-ovn7" href="index.html">markmag-ovn7</a></code></li>
+<li><code><a title="cipher_solver" href="index.html">cipher_solver</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="markmag-ovn7.tests.SimpleSolverTestCase" href="#markmag-ovn7.tests.SimpleSolverTestCase">SimpleSolverTestCase</a></code></h4>
+<h4><code><a title="cipher_solver.tests.SimpleSolverTestCase" href="#cipher_solver.tests.SimpleSolverTestCase">SimpleSolverTestCase</a></code></h4>
 <ul class="">
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_constants" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_constants">test_constants</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_utils" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_utils">test_utils</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_init" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_init">test_init</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_initial_key" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_initial_key">test_get_initial_key</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_common_letters">test_get_common_letters</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_digram_matrix">test_get_digram_matrix</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_score" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_score">test_score</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_swap_matrix" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_swap_matrix">test_swap_matrix</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_get_plaintext">test_get_plaintext</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_public_api" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_public_api">test_public_api</a></code></li>
-<li><code><a title="markmag-ovn7.tests.SimpleSolverTestCase.test_matrix_key_swap" href="#markmag-ovn7.tests.SimpleSolverTestCase.test_matrix_key_swap">test_matrix_key_swap</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_constants" href="#cipher_solver.tests.SimpleSolverTestCase.test_constants">test_constants</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_utils" href="#cipher_solver.tests.SimpleSolverTestCase.test_utils">test_utils</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_init" href="#cipher_solver.tests.SimpleSolverTestCase.test_init">test_init</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_get_initial_key" href="#cipher_solver.tests.SimpleSolverTestCase.test_get_initial_key">test_get_initial_key</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_get_common_letters" href="#cipher_solver.tests.SimpleSolverTestCase.test_get_common_letters">test_get_common_letters</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_get_digram_matrix" href="#cipher_solver.tests.SimpleSolverTestCase.test_get_digram_matrix">test_get_digram_matrix</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_score" href="#cipher_solver.tests.SimpleSolverTestCase.test_score">test_score</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_swap_matrix" href="#cipher_solver.tests.SimpleSolverTestCase.test_swap_matrix">test_swap_matrix</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_get_plaintext" href="#cipher_solver.tests.SimpleSolverTestCase.test_get_plaintext">test_get_plaintext</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_public_api" href="#cipher_solver.tests.SimpleSolverTestCase.test_public_api">test_public_api</a></code></li>
+<li><code><a title="cipher_solver.tests.SimpleSolverTestCase.test_matrix_key_swap" href="#cipher_solver.tests.SimpleSolverTestCase.test_matrix_key_swap">test_matrix_key_swap</a></code></li>
 </ul>
 </li>
 </ul>
