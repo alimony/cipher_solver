@@ -1,6 +1,6 @@
 from string import ascii_lowercase, ascii_uppercase
 
-from consts import ENGLISH_LETTERS_BY_FREQUENCY, STANDARD_ALPHABET_SIZE
+from cipher_solver.consts import ENGLISH_LETTERS_BY_FREQUENCY, STANDARD_ALPHABET_SIZE
 
 
 def common_to_alphabetical_key(common_key):

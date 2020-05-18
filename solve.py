@@ -3,7 +3,7 @@
 
 import sys
 
-from simple import SimpleSolver
+from cipher_solver.simple import SimpleSolver
 
 
 def main():

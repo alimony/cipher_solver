@@ -3,14 +3,18 @@ import unittest
 from string import ascii_lowercase
 
 import numpy as np
-from consts import (
+from cipher_solver.consts import (
     DIGRAM_MATRIX_ENGLISH,
     ENGLISH_LETTER_FREQUENCIES,
     ENGLISH_LETTERS_BY_FREQUENCY,
     STANDARD_ALPHABET_SIZE,
 )
-from simple import SimpleSolver
-from utils import alphabetical_to_common_key, common_to_alphabetical_key, encrypt
+from cipher_solver.simple import SimpleSolver
+from cipher_solver.utils import (
+    alphabetical_to_common_key,
+    common_to_alphabetical_key,
+    encrypt,
+)
 
 
 class SimpleSolverTestCase(unittest.TestCase):
