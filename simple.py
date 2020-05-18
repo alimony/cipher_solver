@@ -270,7 +270,7 @@ class SimpleSolver:
         """
 
         if len(set(decryption_key)) != STANDARD_ALPHABET_SIZE:
-            raise ValueError(f"Key must include all letters of the alphabet.")
+            raise ValueError("Key must include all letters of the alphabet.")
 
         # The decryption key will be in order of most common first, so we need to
         # construct a list of indices where to insert each to get an alphabetical key.
