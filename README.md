@@ -1,6 +1,6 @@
 # Substitution Cipher Solver
 
-### Algorithm for solving substitution ciphers
+### Algorithm for solving simple, monoalphabetic substitution ciphers
 
 This is Python implementation of the algorithm for solving
 [simple, monoalphabetic substitution ciphers](https://en.wikipedia.org/wiki/Substitution_cipher#Simple_substitution)
