@@ -13,3 +13,9 @@ test:
 .PHONY: coverage
 coverage:
 	coverage run -m unittest discover && coverage report
+
+.PHONY: lint
+lint:
+	flake8 . --count --max-line-length=88 --show-source --statistics --quiet > /dev/null
+	black --check --quiet .
+	bandit --recursive --quiet .
