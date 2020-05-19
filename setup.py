@@ -30,6 +30,7 @@ setuptools.setup(
         "Topic :: Security :: Cryptography",
         "Topic :: Text Processing :: Linguistic",
     ],
+    keywords="monoalphabetic-substitution-cipher substitution-cipher cipher",
     project_urls={
         "Documentation": "",
         "Source": "https://github.com/alimony/cipher_solver",
