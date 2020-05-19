@@ -12,9 +12,11 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
         python-version: [3.6, 3.7, 3.8]
 
     steps:
@@ -30,17 +32,21 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f requirements_dev.txt ]; then pip install -r requirements_dev.txt; fi
+      shell: bash
 
     - name: Lint with flake8
       run: |
         flake8 . --count --max-line-length=88 --show-source --statistics
+      shell: bash
 
     - name: Black Check
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       uses: jpetrucciani/black-check@19.10b0
       with:
         path: .
 
     - name: Bandit Check
+      if: ${{ matrix.os == 'ubuntu-latest' }}
       uses: jpetrucciani/bandit-check@1.6.2
       with:
         path: .
@@ -48,3 +54,4 @@ jobs:
     - name: Test with unittest
       run: |
         python -m unittest discover
+      shell: bash
