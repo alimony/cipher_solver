@@ -37,8 +37,8 @@ class SimpleSolver:
         Set the decryption key to its initial state, effectively starting over.
         """
 ```
-See the [documentation](html/markmag-ovn7) for full description of methods and their
-parameters.
+See the [documentation](https://alimony.github.io/cipher_solver/) for full description
+of methods and their parameters.
 
 #### Requirements
 
