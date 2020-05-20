@@ -32,7 +32,7 @@ setuptools.setup(
     ],
     keywords="monoalphabetic-substitution-cipher substitution-cipher cipher",
     project_urls={
-        "Documentation": "",
+        "Documentation": "https://alimony.github.io/cipher_solver/",
         "Source": "https://github.com/alimony/cipher_solver",
         "Tracker": "https://github.com/alimony/cipher_solver/issues",
     },
