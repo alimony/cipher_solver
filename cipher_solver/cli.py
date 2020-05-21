@@ -25,7 +25,3 @@ def main():
     s.solve()
 
     print(f"\nPlaintext:\n{s.plaintext()}\n")
-
-
-if __name__ == "__main__":
-    main()

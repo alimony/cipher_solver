@@ -39,5 +39,5 @@ setuptools.setup(
     packages=["cipher_solver"],
     install_requires=["numpy"],
     python_requires=">=3.6",
-    entry_points={"console_scripts": ["cipher_solver=cipher_solver.solve:main"]},
+    entry_points={"console_scripts": ["cipher_solver=cipher_solver.cli:main"]},
 )
