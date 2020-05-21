@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+import os
 import sys
 
 from cipher_solver.simple import SimpleSolver
 
 
 def main():
+    script_name = os.path.basename(sys.argv[0])
+
     if len(sys.argv) != 2:
-        sys.exit("Incorrect arguments. Usage: solve.py <path_to_ciphertext_file>")
+        sys.exit(f"Incorrect arguments. Usage: {script_name} <path_to_ciphertext_file>")
 
     input_file = sys.argv[1]
 
