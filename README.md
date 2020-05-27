@@ -10,6 +10,10 @@ by Thomas Jakobsen. The main difference from the paper is that random key swaps 
 instead of a deterministic series of swaps since it yields better results, but the
 original method is included and can be used as an option.
 
+#### Installing
+
+    pip install cipher_solver
+
 #### API
 
 ```python
@@ -47,7 +51,7 @@ of methods and their parameters.
 #### Usage
 
 ```python
-from simple import SimpleSolver
+from cipher_solver.simple import SimpleSolver
 
 # Solve a cipher.
 s = SimpleSolver("U kn kgmhksz tkm exmpb xt Gxesxe.")
@@ -76,13 +80,13 @@ A simple command-line interface is included. To solve a cipher, put it into a te
 and run:
 
 ```bash
-python solve.py <path_to_ciphertext_file>
+cipher_solver <path_to_ciphertext_file>
 ```
 
 Example:
 
 ```bash
-python solve.py texts/26_char_key/ciphertexts/ciphertext_frankenstein_sample.txt
+cipher_solver texts/26_char_key/ciphertexts/ciphertext_frankenstein_sample.txt
 ```
 
 Since the algorithm involves [hill climbing](https://en.wikipedia.org/wiki/Hill_climbing)
@@ -91,16 +95,16 @@ again and the next result should be better.
 
 #### Running tests
 
-`make test`
+    make test
 
 #### Checking coverage
 
-`make coverage`
+    make coverage
 
 (Requires the `coverage` package.)
 
 #### Generating documentation
 
-`make docs`
+    make docs
 
 (Requires the `pdoc3` package.)
