@@ -313,7 +313,8 @@ class SimpleSolverTestCase(unittest.TestCase):
                 if a == b:
                     continue
 
-                ciphertext = "".join(random.choices(ascii_lowercase, k=100))  # nosec:B311
+                sample = random.choices(ascii_lowercase, k=100)  # nosec:B311
+                ciphertext = "".join(sample)
 
                 s = SimpleSolver(ciphertext)
 
