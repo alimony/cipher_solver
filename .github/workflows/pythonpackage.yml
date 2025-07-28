@@ -41,13 +41,13 @@ jobs:
 
     - name: Black Check
       if: ${{ matrix.os == 'ubuntu-latest' }}
-      uses: jpetrucciani/black-check@19.10b0
+      uses: jpetrucciani/black-check@master
       with:
         path: .
 
     - name: Bandit Check
       if: ${{ matrix.os == 'ubuntu-latest' }}
-      uses: jpetrucciani/bandit-check@1.6.2
+      uses: jpetrucciani/bandit-check@main
       with:
         path: .
 
