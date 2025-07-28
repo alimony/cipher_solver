@@ -3,6 +3,7 @@ import unittest
 from string import ascii_lowercase
 
 import numpy as np
+
 from cipher_solver.consts import (
     DIGRAM_MATRIX_ENGLISH,
     ENGLISH_LETTER_FREQUENCIES,
@@ -312,7 +313,7 @@ class SimpleSolverTestCase(unittest.TestCase):
                 if a == b:
                     continue
 
-                ciphertext = "".join(random.choices(ascii_lowercase, k=100))
+                ciphertext = "".join(random.choices(ascii_lowercase, k=100))  # nosec:B311
 
                 s = SimpleSolver(ciphertext)
 

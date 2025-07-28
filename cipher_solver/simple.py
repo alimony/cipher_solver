@@ -3,6 +3,7 @@ from collections import Counter
 from string import ascii_lowercase, ascii_uppercase
 
 import numpy as np
+
 from cipher_solver.consts import (
     DIGRAM_MATRIX_ENGLISH,
     ENGLISH_LETTERS_BY_FREQUENCY,
@@ -310,7 +311,7 @@ class SimpleSolver:
             A pair of random indices between zero and the alphabet length.
         """
 
-        return random.sample(RANDOM_INDEX_DISTRIBUTION, 2)
+        return random.sample(RANDOM_INDEX_DISTRIBUTION, 2)  # nosec:B311
 
     def _solve_deterministic(self):
         """Solve the cipher using predefined, structured digram matrix swaps.
